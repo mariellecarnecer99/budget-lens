@@ -1,3 +1,4 @@
+import 'package:expense_tracker/pages/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -89,12 +90,21 @@ class _HomePageState extends State<HomePage> {
                             fontSize: 14,
                           ))
                     ])),
-                const Text(
-                  "View Insights",
-                  style: TextStyle(
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => AnalyticsPage()),
+                    );
+                  },
+                  child: Text(
+                    "View Insights",
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue),
+                      color: Colors.blue,
+                    ),
+                  ),
                 )
               ],
             ),
@@ -106,7 +116,7 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: Row(
               children: [
-                buildTopSpendsChart("FOOD & DRINKS", Colors.blue, .3),
+                buildTopSpendsChart("FOOD & DRINKS", Color(0xFFFF3AF2), .3),
                 const SizedBox(
                   width: 2,
                 ),
@@ -114,11 +124,11 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(
                   width: 2,
                 ),
-                buildTopSpendsChart("GROCERIES", Colors.yellow, .20),
+                buildTopSpendsChart("GROCERIES", Color(0xFFFFC300), .20),
                 const SizedBox(
                   width: 2,
                 ),
-                buildTopSpendsChart("SHOPPING", Colors.orange, .23),
+                buildTopSpendsChart("SHOPPING", Color(0xFF6E1BFF), .23),
               ],
             ),
           ),
