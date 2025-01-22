@@ -8,10 +8,8 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class CategoriesPageState extends State<CategoriesPage> {
-  // Default list of categories
   List<String> categories = ['Food', 'Transport', 'Entertainment', 'Utilities'];
 
-  // Function to handle adding a new category
   void addCategory() async {
     String? newCategory = await showDialog<String>(
       context: context,
@@ -36,7 +34,6 @@ class CategoriesPageState extends State<CategoriesPage> {
     }
   }
 
-  // Function to handle editing an existing category
   void editCategory(int index) async {
     String? editedCategory = await showDialog<String>(
       context: context,
@@ -62,7 +59,6 @@ class CategoriesPageState extends State<CategoriesPage> {
     }
   }
 
-  // Function to handle deleting a category
   void deleteCategory(int index) {
     setState(() {
       categories.removeAt(index);
@@ -93,16 +89,14 @@ class CategoriesPageState extends State<CategoriesPage> {
                 ),
               ],
             ),
-            onTap: () {
-              // Optional: You could handle item tap to view category details
-            },
+            onTap: () {},
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: addCategory,
-        child: Icon(Icons.add),
         tooltip: "Add Category",
+        child: Icon(Icons.add),
       ),
     );
   }

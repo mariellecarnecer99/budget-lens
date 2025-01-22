@@ -8,7 +8,6 @@ class CurrencyPage extends StatefulWidget {
 }
 
 class CurrencyPageState extends State<CurrencyPage> {
-  // Example list of currencies
   final List<Map<String, String>> currencies = [
     {"name": "USD", "icon": "💵"},
     {"name": "EUR", "icon": "💶"},
@@ -19,25 +18,20 @@ class CurrencyPageState extends State<CurrencyPage> {
 
   String? selectedCurrency;
 
-  // Function to handle the selection of a currency
   void selectCurrency(String currency) {
     setState(() {
       selectedCurrency = currency;
     });
   }
 
-  // Handle Done button press (save the selection)
   void onDone() {
     if (selectedCurrency != null) {
-      // Handle saving the selected currency, for example, with SharedPreferences
-      Navigator.pop(
-          context, selectedCurrency); // Just returning the selected currency
+      Navigator.pop(context, selectedCurrency);
     }
   }
 
-  // Handle Cancel button press (discard the changes)
   void onCancel() {
-    Navigator.pop(context); // Just return without saving
+    Navigator.pop(context);
   }
 
   @override
