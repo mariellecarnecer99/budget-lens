@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'navbar.dart';
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});
@@ -203,44 +204,18 @@ class AnalyticsPageState extends State<AnalyticsPage> {
           ),
         ),
       ]),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(shape: BoxShape.circle, boxShadow: [
-          BoxShadow(color: Colors.white, spreadRadius: 7, blurRadius: 1)
-        ]),
-        child: FloatingActionButton(
-          onPressed: () => showTransactionForm(context),
-          backgroundColor: Colors.blue,
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(100)),
-          child: Icon(Icons.add, color: Colors.white, size: 28),
-        ),
+      floatingActionButton: CustomFloatingActionButton(
+        onPressed: () => showTransactionForm(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomNavigationBar(
-          onTap: (index) {
-            setState(() {
-              selectedIndex = index;
-            });
-          },
-          currentIndex: selectedIndex,
-          showSelectedLabels: false,
-          showUnselectedLabels: false,
-          items: [
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.home,
-                  color: Colors.blue,
-                  size: 28,
-                ),
-                label: 'Home'),
-            BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.settings,
-                  color: Colors.blue,
-                  size: 28,
-                ),
-                label: 'Settings')
-          ]),
+      bottomNavigationBar: CustomBottomNavigationBar(
+        selectedIndex: selectedIndex,
+        onTap: (index) {
+          setState(() {
+            selectedIndex = index;
+          });
+        },
+      ),
     );
   }
 

@@ -1,349 +1,49 @@
-import 'package:expense_tracker/pages/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'navbar.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<SettingsPage> createState() => SettingsPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  double availableScreenWidth = 0;
+class SettingsPageState extends State<SettingsPage> {
   int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    availableScreenWidth = MediaQuery.of(context).size.width - 50;
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 25),
-            alignment: Alignment.bottomCenter,
-            height: 170,
-            decoration: BoxDecoration(color: Colors.blue.shade800),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      "BudgetLens",
-                      style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
-                    ),
-                    Text(
-                      "Your financial snapshot",
-                      style: TextStyle(fontSize: 17, color: Colors.white),
-                    )
-                  ],
-                ),
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.black.withValues(alpha: 0.1)),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.search,
-                          size: 28,
-                          color: Colors.white,
-                        ),
-                      ),
-                    )
-                  ],
-                )
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 25,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                RichText(
-                    text: TextSpan(
-                        text: "Top spends ",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                        children: [
-                      TextSpan(
-                          text: "Breakdown",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 14,
-                          ))
-                    ])),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AnalyticsPage()),
-                    );
-                  },
-                  child: Text(
-                    "View Insights",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 25,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Row(
-              children: [
-                buildTopSpendsChart("FOOD & DRINKS", Color(0xFFFF3AF2), .3),
-                const SizedBox(
-                  width: 2,
-                ),
-                buildTopSpendsChart("UTILITIES", Colors.red, .25),
-                const SizedBox(
-                  width: 2,
-                ),
-                buildTopSpendsChart("GROCERIES", Color(0xFFFFC300), .20),
-                const SizedBox(
-                  width: 2,
-                ),
-                buildTopSpendsChart("SHOPPING", Color(0xFF6E1BFF), .23),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 15,
-          ),
-          const Divider(
-            height: 20,
-          ),
-          Expanded(
-              child: ListView(
-            padding: EdgeInsets.all(25),
-            children: [
-              const Text(
-                "Cash Flow",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                children: [
-                  buildCashFlowColumn(
-                      Icons.account_balance_wallet, "Income", "\$25607.53"),
-                  SizedBox(
-                    width: availableScreenWidth * .03,
-                  ),
-                  buildCashFlowColumn(
-                      Icons.monetization_on, "Balance", "\$16052.78"),
-                  SizedBox(
-                    width: availableScreenWidth * .03,
-                  ),
-                  buildCashFlowColumn(Icons.payments, "Expense", "\$9554.75")
-                ],
-              ),
-              Divider(
-                height: 60,
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Transaction History",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              buildTransactionRow(Icons.shopping_bag, "Dior Bag", "02 Jan 25",
-                  "Shopping", "\$952"),
-              buildTransactionRow(Icons.receipt_long, "Electric & Water Bill",
-                  "02 Jan 25", "Utilities", "\$380.45"),
-              buildTransactionRow(Icons.receipt_long, "Wifi and Phone Plan",
-                  "02 Jan 25", "Utilities", "\$120"),
-              buildTransactionRow(Icons.restaurant, "Popeyes Dine-in",
-                  "02 Jan 25", "Food & Drinks", "\$30"),
-              buildTransactionRow(Icons.local_grocery_store, "Fridge restock",
-                  "02 Jan 25", "Groceries", "\$80"),
-            ],
-          ))
-        ],
-      ),
-      floatingActionButton: CustomFloatingActionButton(
-        onPressed: () => showTransactionForm(context),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: CustomBottomNavigationBar(
-        selectedIndex: selectedIndex,
-        onTap: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-      ),
-    );
-  }
-
-  Column buildTopSpendsChart(
-      String title, Color color, double widthPercentage) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: availableScreenWidth * widthPercentage,
-          height: 4,
-          color: color,
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-          ),
-        )
-      ],
-    );
-  }
-
-  Column buildCashFlowColumn(IconData icon, String category, String amount) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: availableScreenWidth * .31,
-          decoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(20)),
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                icon,
-                size: 20,
-                color: Colors.blue.shade800,
-              ),
-              SizedBox(height: 8),
-              Text(
-                category,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.blue.shade800,
-                ),
-              ),
-              SizedBox(height: 4),
-              Text(
-                amount,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue.shade800,
-                ),
-              ),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-
-  Container buildTransactionRow(IconData categoryIcon, String transactionName,
-      String date, String categoryName, String amount) {
-    return Container(
-        margin: EdgeInsets.only(bottom: 8),
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        height: 85,
-        decoration: BoxDecoration(
-            color: Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(15)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        backgroundColor: Colors.grey[100],
+        body: Column(
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10),
-                  height: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.blue.shade800,
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Icon(
-                    categoryIcon,
-                    color: Colors.blue[200],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      transactionName,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(height: 4),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text(
-                          date,
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          "|",
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          categoryName,
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            Text(
-              amount,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Container(
+              padding: const EdgeInsets.only(top: 80),
+              alignment: Alignment.bottomCenter,
+              decoration: BoxDecoration(color: Colors.blue.shade800),
+              child: Text(
+                "Settings",
+                style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
+              ),
             ),
           ],
+        ),
+        floatingActionButton: CustomFloatingActionButton(
+          onPressed: () => showTransactionForm(context),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: CustomBottomNavigationBar(
+          selectedIndex: selectedIndex,
+          onTap: (index) {
+            setState(() {
+              selectedIndex = index;
+            });
+          },
         ));
   }
 
