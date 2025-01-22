@@ -1,3 +1,5 @@
+import 'package:expense_tracker/pages/categories.dart';
+import 'package:expense_tracker/pages/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -12,23 +14,72 @@ class SettingsPage extends StatefulWidget {
 
 class SettingsPageState extends State<SettingsPage> {
   int selectedIndex = 0;
+  // Static list of currencies
+  List<String> currencies = [
+    'USD - United States Dollar',
+    'EUR - Euro',
+    'GBP - British Pound',
+    'INR - Indian Rupee',
+    'AUD - Australian Dollar',
+    'CAD - Canadian Dollar',
+    'JPY - Japanese Yen',
+    'CNY - Chinese Yuan',
+    'MXN - Mexican Peso',
+    'BRL - Brazilian Real',
+  ];
+
+  String selectedCurrency =
+      'USD - United States Dollar'; // Default selected currency
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[100],
         body: Column(
           children: [
             Container(
-              padding: const EdgeInsets.only(top: 80),
+              padding: const EdgeInsets.only(top: 80, bottom: 60),
               alignment: Alignment.bottomCenter,
               decoration: BoxDecoration(color: Colors.blue.shade800),
               child: Text(
-                "Settings",
+                "Manage Settings",
                 style: TextStyle(
                     fontSize: 26,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                children: <Widget>[
+                  buildListTile(
+                    "Currency",
+                    Icons.currency_exchange,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => CurrencyPage()),
+                      );
+                    },
+                  ),
+                  Divider(
+                    color: Colors.blue.shade800,
+                  ),
+                  buildListTile(
+                    "Categories",
+                    Icons.category,
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => CategoriesPage()),
+                      );
+                    },
+                  ),
+                  Divider(
+                    color: Colors.blue.shade800,
+                  ),
+                ],
               ),
             ),
           ],
@@ -45,6 +96,21 @@ class SettingsPageState extends State<SettingsPage> {
             });
           },
         ));
+  }
+
+  Widget buildListTile(String title, IconData icon, Function() onTap) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16),
+      child: ListTile(
+        leading: Icon(icon, color: Colors.blue.shade800),
+        title: Text(
+          title,
+          style: TextStyle(fontSize: 18, color: Colors.black),
+        ),
+        trailing: Icon(Icons.arrow_forward, color: Colors.blue.shade800),
+        onTap: onTap,
+      ),
+    );
   }
 
   void showTransactionForm(BuildContext context) {
