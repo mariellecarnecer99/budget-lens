@@ -8,15 +8,22 @@ class CurrencyPage extends StatefulWidget {
 }
 
 class CurrencyPageState extends State<CurrencyPage> {
-  final List<Map<String, String>> currencies = [
-    {"name": "USD", "icon": "💵"},
-    {"name": "EUR", "icon": "💶"},
-    {"name": "GBP", "icon": "💷"},
-    {"name": "INR", "icon": "₹"},
-    {"name": "JPY", "icon": "¥"},
+  final List<Map<String, dynamic>> currencies = [
+    {"name": "USD", "icon": Icons.attach_money},
+    {"name": "EUR", "icon": Icons.euro_symbol},
+    {"name": "GBP", "icon": Icons.currency_pound},
+    {"name": "INR", "icon": Icons.currency_rupee},
+    {"name": "JPY", "icon": Icons.currency_yuan},
+    {"name": "PHP", "icon": '₱'},
   ];
 
   String? selectedCurrency;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedCurrency = 'PHP';
+  }
 
   void selectCurrency(String currency) {
     setState(() {
@@ -43,28 +50,64 @@ class CurrencyPageState extends State<CurrencyPage> {
       body: ListView(
         children: currencies.map((currency) {
           return ListTile(
-            title: Text('${currency['icon']} ${currency['name']}'),
+            title: Row(
+              children: [
+                currency['icon'] is IconData
+                    ? Icon(
+                        currency['icon'],
+                        color: Colors.blue,
+                        size: 25,
+                      )
+                    : Text(
+                        currency['icon'],
+                        style: TextStyle(
+                          fontSize: 25,
+                          color: Colors.blue,
+                        ),
+                      ),
+                SizedBox(width: 8),
+                Text(currency['name']),
+              ],
+            ),
             trailing: selectedCurrency == currency['name']
-                ? Icon(Icons.check_circle, color: Colors.green)
+                ? Icon(Icons.check_circle, color: Colors.blue.shade800)
                 : null,
             onTap: () => selectCurrency(currency['name']!),
           );
         }).toList(),
       ),
       bottomSheet: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             ElevatedButton(
               onPressed: onCancel,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-              child: Text("Cancel"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                shape: CircleBorder(),
+                padding: EdgeInsets.all(16),
+              ),
+              child: Icon(
+                Icons.close,
+                color: Colors.red,
+                size: 28,
+              ),
             ),
             ElevatedButton(
               onPressed: onDone,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-              child: Text("Done"),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                shape: CircleBorder(),
+                padding: EdgeInsets.all(16),
+              ),
+              child: Icon(
+                Icons.check,
+                color: Colors.green,
+                size: 28,
+              ),
             ),
           ],
         ),

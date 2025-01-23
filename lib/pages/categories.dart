@@ -14,14 +14,47 @@ class CategoriesPageState extends State<CategoriesPage> {
     String? newCategory = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Add Category"),
-          content: TextField(
-            autofocus: true,
-            decoration: InputDecoration(hintText: "Enter category name"),
-            onSubmitted: (value) {
-              Navigator.of(context).pop(value);
-            },
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 5,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Add Category",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    )),
+                SizedBox(height: 12),
+                TextFormField(
+                  autofocus: true,
+                  decoration: InputDecoration(
+                    hintText: "Enter category name",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.blue.shade800),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                  onFieldSubmitted: (value) {
+                    Navigator.of(context).pop(value);
+                  },
+                ),
+                SizedBox(height: 16),
+              ],
+            ),
           ),
         );
       },
@@ -38,15 +71,50 @@ class CategoriesPageState extends State<CategoriesPage> {
     String? editedCategory = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Edit Category"),
-          content: TextField(
-            autofocus: true,
-            controller: TextEditingController(text: categories[index]),
-            decoration: InputDecoration(hintText: "Edit category name"),
-            onSubmitted: (value) {
-              Navigator.of(context).pop(value);
-            },
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          elevation: 5,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Edit Category",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: 12),
+                TextFormField(
+                  autofocus: true,
+                  controller: TextEditingController(text: categories[index]),
+                  decoration: InputDecoration(
+                    hintText: "Edit category name",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.blue.shade800),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+                  ),
+                  onFieldSubmitted: (value) {
+                    Navigator.of(context).pop(value);
+                  },
+                ),
+                SizedBox(height: 16),
+              ],
+            ),
           ),
         );
       },
@@ -80,11 +148,17 @@ class CategoriesPageState extends State<CategoriesPage> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.edit),
+                  icon: Icon(
+                    Icons.edit,
+                    color: Colors.blue.shade800,
+                  ),
                   onPressed: () => editCategory(index),
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete),
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.blue.shade800,
+                  ),
                   onPressed: () => deleteCategory(index),
                 ),
               ],
@@ -96,7 +170,15 @@ class CategoriesPageState extends State<CategoriesPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: addCategory,
         tooltip: "Add Category",
-        child: Icon(Icons.add),
+        backgroundColor: Colors.blue.shade800,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+          size: 30,
+        ),
       ),
     );
   }

@@ -14,22 +14,14 @@ class SettingsPage extends StatefulWidget {
 
 class SettingsPageState extends State<SettingsPage> {
   int selectedIndex = 0;
-  // Static list of currencies
   List<String> currencies = [
     'USD - United States Dollar',
     'EUR - Euro',
     'GBP - British Pound',
     'INR - Indian Rupee',
-    'AUD - Australian Dollar',
-    'CAD - Canadian Dollar',
     'JPY - Japanese Yen',
-    'CNY - Chinese Yuan',
-    'MXN - Mexican Peso',
-    'BRL - Brazilian Real',
+    'PHP - Philippine Peso',
   ];
-
-  String selectedCurrency =
-      'USD - United States Dollar'; // Default selected currency
 
   @override
   Widget build(BuildContext context) {
