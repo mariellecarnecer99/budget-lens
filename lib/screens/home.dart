@@ -1,4 +1,6 @@
+import 'package:expense_tracker/models/category.dart';
 import 'package:expense_tracker/screens/analytics.dart';
+import 'package:expense_tracker/services/category_database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -347,7 +349,10 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  void showTransactionForm(BuildContext context) {
+  void showTransactionForm(BuildContext context) async {
+    CategoryDatabaseHelper dbHelper = CategoryDatabaseHelper();
+    List<Category> categories = await dbHelper.getCategories();
+
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController transactionNameController =
         TextEditingController();
@@ -359,14 +364,6 @@ class _HomePageState extends State<HomePage> {
         TextEditingController();
     DateTime? transactionDate;
     String? transactionCategory;
-
-    List<String> categories = [
-      'Food & Drinks',
-      'Utilities',
-      'Shopping',
-      'Groceries',
-      'Transport'
-    ];
 
     showDialog(
       context: context,
@@ -568,8 +565,8 @@ class _HomePageState extends State<HomePage> {
                           ),
                           items: categories
                               .map((category) => DropdownMenuItem<String>(
-                                    value: category,
-                                    child: Text(category),
+                                    value: category.name,
+                                    child: Text(category.name),
                                   ))
                               .toList(),
                           onChanged: (value) {
