@@ -1,5 +1,5 @@
-import 'package:expense_tracker/pages/home.dart';
-import 'package:expense_tracker/pages/settings.dart';
+import 'package:expense_tracker/screens/home.dart';
+import 'package:expense_tracker/screens/settings.dart';
 import 'package:flutter/material.dart';
 
 class CustomFloatingActionButton extends StatelessWidget {

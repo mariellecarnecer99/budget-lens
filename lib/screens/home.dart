@@ -1,4 +1,4 @@
-import 'package:expense_tracker/pages/analytics.dart';
+import 'package:expense_tracker/screens/analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';

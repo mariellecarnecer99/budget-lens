@@ -1,4 +1,6 @@
+import 'package:expense_tracker/services/category_database_helper.dart';
 import 'package:flutter/material.dart';
+import '../models/category.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
@@ -8,10 +10,16 @@ class CategoriesPage extends StatefulWidget {
 }
 
 class CategoriesPageState extends State<CategoriesPage> {
-  List<String> categories = ['Food', 'Transport', 'Entertainment', 'Utilities'];
+  List<Category> categories = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadCategories();
+  }
 
   void addCategory() async {
-    String? newCategory = await showDialog<String>(
+    String? newCategoryName = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
@@ -60,15 +68,26 @@ class CategoriesPageState extends State<CategoriesPage> {
       },
     );
 
-    if (newCategory != null && newCategory.isNotEmpty) {
-      setState(() {
-        categories.add(newCategory);
-      });
+    if (newCategoryName != null && newCategoryName.isNotEmpty) {
+      Category newCategory = Category(name: newCategoryName);
+      var dbHelper = CategoryDatabaseHelper();
+      await dbHelper.insertCategory(newCategory);
+      loadCategories();
     }
   }
 
+  void loadCategories() async {
+    var dbHelper = CategoryDatabaseHelper();
+    List<Category> categoriesFromDb = await dbHelper.getCategories();
+
+    setState(() {
+      categories = categoriesFromDb;
+    });
+  }
+
   void editCategory(int index) async {
-    String? editedCategory = await showDialog<String>(
+    Category categoryToEdit = categories[index];
+    String? editedCategoryName = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
@@ -93,7 +112,7 @@ class CategoriesPageState extends State<CategoriesPage> {
                 SizedBox(height: 12),
                 TextFormField(
                   autofocus: true,
-                  controller: TextEditingController(text: categories[index]),
+                  controller: TextEditingController(text: categoryToEdit.name),
                   decoration: InputDecoration(
                     hintText: "Edit category name",
                     border: OutlineInputBorder(
@@ -120,17 +139,23 @@ class CategoriesPageState extends State<CategoriesPage> {
       },
     );
 
-    if (editedCategory != null && editedCategory.isNotEmpty) {
-      setState(() {
-        categories[index] = editedCategory;
-      });
+    if (editedCategoryName != null && editedCategoryName.isNotEmpty) {
+      Category updatedCategory =
+          Category(id: categoryToEdit.id, name: editedCategoryName);
+      var dbHelper = CategoryDatabaseHelper();
+      await dbHelper.updateCategory(updatedCategory);
+      loadCategories();
     }
   }
 
-  void deleteCategory(int index) {
+  void deleteCategory(int index) async {
+    var dbHelper = CategoryDatabaseHelper();
+    Category categoryToDelete = categories[index];
+    await dbHelper.deleteCategory(categoryToDelete.id!);
     setState(() {
       categories.removeAt(index);
     });
+    loadCategories();
   }
 
   @override
@@ -143,7 +168,7 @@ class CategoriesPageState extends State<CategoriesPage> {
         itemCount: categories.length,
         itemBuilder: (context, index) {
           return ListTile(
-            title: Text(categories[index]),
+            title: Text(categories[index].name),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

@@ -1,5 +1,5 @@
-import 'package:expense_tracker/pages/categories.dart';
-import 'package:expense_tracker/pages/currency.dart';
+import 'package:expense_tracker/screens/categories.dart';
+import 'package:expense_tracker/screens/currency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
