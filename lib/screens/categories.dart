@@ -1,4 +1,4 @@
-import 'package:expense_tracker/services/category_database_helper.dart';
+import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import '../models/category.dart';
 
@@ -70,14 +70,14 @@ class CategoriesPageState extends State<CategoriesPage> {
 
     if (newCategoryName != null && newCategoryName.isNotEmpty) {
       Category newCategory = Category(name: newCategoryName);
-      var dbHelper = CategoryDatabaseHelper();
+      var dbHelper = DatabaseHelper();
       await dbHelper.insertCategory(newCategory);
       loadCategories();
     }
   }
 
   void loadCategories() async {
-    var dbHelper = CategoryDatabaseHelper();
+    var dbHelper = DatabaseHelper();
     List<Category> categoriesFromDb = await dbHelper.getCategories();
 
     setState(() {
@@ -142,14 +142,14 @@ class CategoriesPageState extends State<CategoriesPage> {
     if (editedCategoryName != null && editedCategoryName.isNotEmpty) {
       Category updatedCategory =
           Category(id: categoryToEdit.id, name: editedCategoryName);
-      var dbHelper = CategoryDatabaseHelper();
+      var dbHelper = DatabaseHelper();
       await dbHelper.updateCategory(updatedCategory);
       loadCategories();
     }
   }
 
   void deleteCategory(int index) async {
-    var dbHelper = CategoryDatabaseHelper();
+    var dbHelper = DatabaseHelper();
     Category categoryToDelete = categories[index];
     await dbHelper.deleteCategory(categoryToDelete.id!);
     setState(() {

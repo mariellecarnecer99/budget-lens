@@ -1,6 +1,7 @@
 import 'package:expense_tracker/models/category.dart';
+import 'package:expense_tracker/models/transactions.dart';
 import 'package:expense_tracker/screens/analytics.dart';
-import 'package:expense_tracker/services/category_database_helper.dart';
+import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -142,60 +143,73 @@ class _HomePageState extends State<HomePage> {
             height: 20,
           ),
           Expanded(
-              child: ListView(
-            padding: EdgeInsets.all(25),
-            children: [
-              const Text(
-                "Cash Flow",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(
-                height: 15,
-              ),
-              Row(
-                children: [
-                  buildCashFlowColumn(
-                      Icons.account_balance_wallet, "Income", "\$25607.53"),
-                  SizedBox(
-                    width: availableScreenWidth * .03,
-                  ),
-                  buildCashFlowColumn(
-                      Icons.monetization_on, "Balance", "\$16052.78"),
-                  SizedBox(
-                    width: availableScreenWidth * .03,
-                  ),
-                  buildCashFlowColumn(Icons.payments, "Expense", "\$9554.75")
-                ],
-              ),
-              Divider(
-                height: 60,
-              ),
-              Row(
-                children: [
-                  Text(
-                    "Transaction History",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              buildTransactionRow(Icons.shopping_bag, "Dior Bag", "02 Jan 25",
-                  "Shopping", "\$952"),
-              buildTransactionRow(Icons.receipt_long, "Electric & Water Bill",
-                  "02 Jan 25", "Utilities", "\$380.45"),
-              buildTransactionRow(Icons.receipt_long, "Wifi and Phone Plan",
-                  "02 Jan 25", "Utilities", "\$120"),
-              buildTransactionRow(Icons.restaurant, "Popeyes Dine-in",
-                  "02 Jan 25", "Food & Drinks", "\$30"),
-              buildTransactionRow(Icons.local_grocery_store, "Fridge restock",
-                  "02 Jan 25", "Groceries", "\$80"),
-            ],
-          ))
+            child: FutureBuilder<List<Transactions>>(
+              future: DatabaseHelper().getTransactions(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No transactions available.'));
+                }
+
+                final transactions = snapshot.data!;
+
+                return ListView(
+                  padding: EdgeInsets.all(25),
+                  children: [
+                    const Text(
+                      "Cash Flow",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      children: [
+                        buildCashFlowColumn(Icons.account_balance_wallet,
+                            "Income", DatabaseHelper().getTotalIncome()),
+                        SizedBox(width: availableScreenWidth * .03),
+                        buildCashFlowColumn(Icons.monetization_on, "Balance",
+                            DatabaseHelper().getBalance()),
+                        SizedBox(width: availableScreenWidth * .03),
+                        buildCashFlowColumn(Icons.payments, "Expense",
+                            DatabaseHelper().getTotalExpenses())
+                      ],
+                    ),
+                    Divider(height: 60),
+                    Row(
+                      children: [
+                        Text(
+                          "Transaction History",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ...transactions.map((transaction) {
+                      return buildTransactionRow(
+                          transaction.transactionName,
+                          transaction.date,
+                          transaction.categoryName,
+                          "\$${transaction.amount.toStringAsFixed(2)}");
+                    }),
+                  ],
+                );
+              },
+            ),
+          ),
         ],
       ),
       floatingActionButton: CustomFloatingActionButton(
@@ -237,7 +251,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Column buildCashFlowColumn(IconData icon, String category, String amount) {
+  Column buildCashFlowColumn(
+      IconData icon, String category, Future<double> amount) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -265,13 +280,47 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               SizedBox(height: 4),
-              Text(
-                amount,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue.shade800,
-                ),
+              FutureBuilder<double>(
+                future: amount,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Text(
+                      'Loading...',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue.shade800,
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    return Text(
+                      'Error: ${snapshot.error}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue.shade800,
+                      ),
+                    );
+                  } else if (snapshot.hasData) {
+                    return Text(
+                      snapshot.data!.toStringAsFixed(2),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue.shade800,
+                      ),
+                    );
+                  } else {
+                    return Text(
+                      'No data available',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.blue.shade800,
+                      ),
+                    );
+                  }
+                },
               ),
             ],
           ),
@@ -280,8 +329,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Container buildTransactionRow(IconData categoryIcon, String transactionName,
-      String date, String categoryName, String amount) {
+  Container buildTransactionRow(
+      String transactionName, String date, String categoryName, String amount) {
     return Container(
         margin: EdgeInsets.only(bottom: 8),
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -303,7 +352,7 @@ class _HomePageState extends State<HomePage> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Icon(
-                    categoryIcon,
+                    getCategoryIcon(categoryName),
                     color: Colors.blue[200],
                   ),
                 ),
@@ -326,9 +375,10 @@ class _HomePageState extends State<HomePage> {
                           style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                         const SizedBox(width: 10),
-                        Text(
-                          "|",
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                        Container(
+                          width: 1,
+                          height: 20,
+                          color: Colors.grey,
                         ),
                         const SizedBox(width: 10),
                         Text(
@@ -350,7 +400,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void showTransactionForm(BuildContext context) async {
-    CategoryDatabaseHelper dbHelper = CategoryDatabaseHelper();
+    DatabaseHelper dbHelper = DatabaseHelper();
     List<Category> categories = await dbHelper.getCategories();
 
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -364,6 +414,7 @@ class _HomePageState extends State<HomePage> {
         TextEditingController();
     DateTime? transactionDate;
     String? transactionCategory;
+    String? transactionType;
 
     showDialog(
       context: context,
@@ -580,6 +631,46 @@ class _HomePageState extends State<HomePage> {
                           },
                         ),
                         SizedBox(height: 20),
+                        DropdownButtonFormField<String>(
+                          value: transactionType,
+                          decoration: InputDecoration(
+                            labelText: 'Transaction Type',
+                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.blue.shade800),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
+                          ),
+                          items: ['Expense', 'Income']
+                              .map((type) => DropdownMenuItem<String>(
+                                    value: type,
+                                    child: Text(type),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              transactionType = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a transaction type';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
                         TextFormField(
                           controller: transactionNotesController,
                           decoration: InputDecoration(
@@ -643,11 +734,11 @@ class _HomePageState extends State<HomePage> {
                       ),
                       SizedBox(width: 10),
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (formKey.currentState?.validate() ?? false) {
                             String transactionName =
                                 transactionNameController.text;
-                            String transactionAmount =
+                            String transactionAmountStr =
                                 transactionAmountController.text;
                             String transactionNotes =
                                 transactionNotesController.text;
@@ -655,6 +746,13 @@ class _HomePageState extends State<HomePage> {
                                 transactionCategory ?? 'None';
                             String transactionDate =
                                 transactionDateController.text;
+                            String transactionTypeCat =
+                                transactionType ?? 'None';
+
+                            double transactionAmount = double.tryParse(
+                                    transactionAmountStr.replaceAll(
+                                        RegExp(r'[^\d.]'), '')) ??
+                                0.0;
 
                             DateTime? date = DateTime.tryParse(transactionDate);
                             String formattedDate = '';
@@ -663,11 +761,16 @@ class _HomePageState extends State<HomePage> {
                                   DateFormat('dd MMM yy').format(date);
                             }
 
-                            print('Transaction Name: $transactionName');
-                            print('Transaction Amount: $transactionAmount');
-                            print('Transaction Date: $formattedDate');
-                            print('Transaction Category: $transactionCat');
-                            print('Transaction Notes: $transactionNotes');
+                            Transactions newTransaction = Transactions(
+                                transactionName: transactionName,
+                                amount: transactionAmount,
+                                date: formattedDate,
+                                categoryName: transactionCat,
+                                notes: transactionNotes,
+                                transactionType: transactionTypeCat);
+
+                            DatabaseHelper dbHelper = DatabaseHelper();
+                            await dbHelper.insertTransaction(newTransaction);
 
                             Navigator.of(context).pop();
                           }
@@ -698,5 +801,25 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  IconData getCategoryIcon(String category) {
+    switch (category.toLowerCase()) {
+      case 'shopping':
+        return Icons.shopping_cart;
+      case 'groceries':
+        return Icons.local_grocery_store;
+      case 'food':
+        return Icons.fastfood;
+      case 'transport':
+        return Icons.directions_car;
+      case 'electronics':
+        return Icons.devices;
+      case 'salary':
+      case 'earnings':
+        return Icons.work;
+      default:
+        return Icons.category;
+    }
   }
 }
