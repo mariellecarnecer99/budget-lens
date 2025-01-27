@@ -17,6 +17,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   double availableScreenWidth = 0;
   int selectedIndex = 0;
+  List<Transactions> transactionList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    loadTransactions();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +207,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     ...transactions.map((transaction) {
                       return buildTransactionRow(
+                          transaction.id,
                           transaction.transactionName,
                           transaction.date,
                           transaction.categoryName,
@@ -329,8 +337,8 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Container buildTransactionRow(
-      String transactionName, String date, String categoryName, String amount) {
+  Container buildTransactionRow(int? id, String transactionName, String date,
+      String categoryName, String amount) {
     return Container(
         margin: EdgeInsets.only(bottom: 8),
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -374,13 +382,13 @@ class _HomePageState extends State<HomePage> {
                           date,
                           style: TextStyle(fontSize: 14, color: Colors.grey),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 5),
                         Container(
                           width: 1,
                           height: 20,
                           color: Colors.grey,
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 5),
                         Text(
                           categoryName,
                           style: TextStyle(fontSize: 14, color: Colors.grey),
@@ -393,8 +401,34 @@ class _HomePageState extends State<HomePage> {
             ),
             Text(
               amount,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+            Padding(
+              padding: EdgeInsets.zero,
+              child: PopupMenuButton<String>(
+                icon: Icon(Icons.more_vert, color: Colors.blue.shade800),
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    print('Edit clicked');
+                  } else if (value == 'delete') {
+                    showDeleteConfirmationDialog(context, id);
+                  }
+                },
+                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  PopupMenuItem<String>(
+                    value: 'edit',
+                    child: Text('Edit'),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'delete',
+                    child: Text('Delete'),
+                  ),
+                ],
+              ),
+            )
           ],
         ));
   }
@@ -821,5 +855,75 @@ class _HomePageState extends State<HomePage> {
       default:
         return Icons.category;
     }
+  }
+
+  void showDeleteConfirmationDialog(BuildContext context, int? id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Confirm Deletion',
+            style: TextStyle(fontSize: 24, color: Colors.blue.shade800),
+          ),
+          content: Text(
+            'Are you sure you want to delete this transaction?',
+            style: TextStyle(fontSize: 18),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'No',
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            ),
+            TextButton(
+              onPressed: () async {
+                await deleteTransaction(id);
+                Navigator.of(context).pop();
+              },
+              child: Text('Yes',
+                  style: TextStyle(fontSize: 16, color: Colors.blue.shade800)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  deleteTransaction(id) async {
+    var dbHelper = DatabaseHelper();
+    Transactions? transactionToDelete;
+
+    try {
+      transactionToDelete = transactionList.firstWhere(
+        (transaction) => transaction.id == id,
+      );
+    } catch (e) {
+      print("Transaction with ID $id not found");
+      return;
+    }
+
+    if (transactionToDelete != null) {
+      await dbHelper.deleteTransaction(transactionToDelete.id!);
+
+      setState(() {
+        transactionList.removeWhere((transaction) => transaction.id == id);
+      });
+
+      loadTransactions();
+    }
+  }
+
+  void loadTransactions() async {
+    var dbHelper = DatabaseHelper();
+    List<Transactions> transactionsFromDb = await dbHelper.getTransactions();
+
+    setState(() {
+      transactionList = transactionsFromDb;
+    });
   }
 }
