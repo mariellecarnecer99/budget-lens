@@ -24,189 +24,307 @@ class AnalyticsPageState extends State<AnalyticsPage> {
 
   bool showAvg = false;
 
+  List<Map<String, dynamic>> categorySpendings = [];
+  double totalSpending = 0.0;
+  String? touchedCategory;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    List<Map<String, dynamic>> result =
+        await DatabaseHelper().fetchCategorySpending();
+
+    totalSpending =
+        result.fold(0.0, (sum, item) => sum + item['total_spending']);
+
+    setState(() {
+      categorySpendings = result;
+    });
+  }
+
+  List<PieChartSectionData> showingSections() {
+    return categorySpendings.map((category) {
+      double percentage = (category['total_spending'] / totalSpending) * 100;
+      bool isTouched = category['category'] == touchedCategory;
+      double fontSize = isTouched ? 20.0 : 16.0;
+      double radius = isTouched ? 110.0 : 100.0;
+      double widgetSize = isTouched ? 55.0 : 40.0;
+      const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
+
+      return PieChartSectionData(
+        color: getCategoryColor(category['category']),
+        value: percentage,
+        title: '${percentage.toStringAsFixed(1)}%',
+        radius: radius,
+        titleStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: const Color(0xffffffff),
+          shadows: shadows,
+        ),
+        badgeWidget: _Badge(
+          getCategoryIcon(category['category']),
+          size: widgetSize,
+          borderColor: Colors.black,
+        ),
+        badgePositionPercentageOffset: .98,
+      );
+    }).toList();
+  }
+
+  Color getCategoryColor(String categoryName) {
+    switch (categoryName) {
+      case 'Food':
+        return Color(0xFFFF3AF2);
+      case 'Transport':
+        return Colors.red;
+      case 'Groceries':
+        return Color(0xFFFFC300);
+      case 'Shopping':
+        return Color(0xFF6E1BFF);
+      case 'Electronics':
+        return Color.fromARGB(255, 150, 114, 37);
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData getCategoryIcon(String categoryName) {
+    switch (categoryName) {
+      case 'Food':
+        return Icons.fastfood;
+      case 'Transport':
+        return Icons.directions_car;
+      case 'Groceries':
+        return Icons.local_grocery_store;
+      case 'Shopping':
+        return Icons.shopping_cart;
+      case 'Electronics':
+        return Icons.devices;
+      default:
+        return Icons.category;
+    }
+  }
+
+  Widget indicatorWithColor(String category, Color color, double percentage) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            SizedBox(width: 8),
+            Text(
+              category,
+              style: TextStyle(color: Colors.white),
+            ),
+            SizedBox(width: 8),
+          ],
+        ),
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: Column(children: [
-        Container(
-          padding: const EdgeInsets.only(top: 80),
-          alignment: Alignment.bottomCenter,
-          decoration: BoxDecoration(color: Colors.blue.shade800),
-          child: Text(
-            "Analytics",
-            style: TextStyle(
-                fontSize: 26, fontWeight: FontWeight.bold, color: Colors.white),
-          ),
-        ),
-        Padding(
-            padding: const EdgeInsets.all(0.0),
-            child: Container(
-              padding: const EdgeInsets.only(
-                  top: 25, bottom: 0, left: 25, right: 25),
-              alignment: Alignment.bottomCenter,
-              decoration: BoxDecoration(color: Colors.blue.shade800),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Top spending categories ",
+      body: categorySpendings.isEmpty
+          ? Center(child: CircularProgressIndicator())
+          : Column(children: [
+              Container(
+                padding: const EdgeInsets.only(top: 80),
+                alignment: Alignment.bottomCenter,
+                decoration: BoxDecoration(color: Colors.blue.shade800),
+                child: Text(
+                  "Analytics",
+                  style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
+                ),
+              ),
+              Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                        top: 25, bottom: 0, left: 25, right: 25),
+                    alignment: Alignment.bottomCenter,
+                    decoration: BoxDecoration(color: Colors.blue.shade800),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Top spending categories ",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          children: [
+                            Text("Week",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                )),
+                            SizedBox(width: 10),
+                            Text("Month",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                )),
+                            SizedBox(width: 10),
+                            Text("Year",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                )),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )),
+              Container(
+                alignment: Alignment.topCenter,
+                decoration: BoxDecoration(color: Colors.blue.shade800),
+                child: AspectRatio(
+                  aspectRatio: 1.3,
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: PieChart(
+                      PieChartData(
+                        pieTouchData: PieTouchData(
+                          touchCallback:
+                              (FlTouchEvent event, pieTouchResponse) {
+                            setState(() {
+                              if (!event.isInterestedForInteractions ||
+                                  pieTouchResponse == null ||
+                                  pieTouchResponse.touchedSection == null) {
+                                touchedCategory = null;
+                                return;
+                              }
+                              touchedCategory = categorySpendings[
+                                  pieTouchResponse.touchedSection!
+                                      .touchedSectionIndex]['category'];
+                            });
+                          },
+                        ),
+                        borderData: FlBorderData(
+                          show: false,
+                        ),
+                        sectionsSpace: 0,
+                        centerSpaceRadius: 0,
+                        sections: showingSections(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                padding: EdgeInsets.only(bottom: 27),
+                alignment: Alignment.bottomCenter,
+                decoration: BoxDecoration(color: Colors.blue.shade800),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: categorySpendings.map((category) {
+                    double percentage =
+                        (category['total_spending'] / totalSpending) * 100;
+                    return indicatorWithColor(category['category'],
+                        getCategoryColor(category['category']), percentage);
+                  }).toList(),
+                ),
+              ),
+              Padding(
+                  padding: const EdgeInsets.all(0.0),
+                  child: Container(
+                    padding: const EdgeInsets.only(
+                        top: 25, bottom: 0, left: 25, right: 25),
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Progress Rate ",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          children: [
+                            Text("Week",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                )),
+                            SizedBox(width: 15),
+                            Text("Month",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                )),
+                            SizedBox(width: 15),
+                            Text("Year",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                )),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )),
+              Expanded(
+                child: Container(
+                  alignment: Alignment.topCenter,
+                  child: AspectRatio(
+                    aspectRatio: 1.90,
+                    child: Padding(
+                      padding: const EdgeInsets.only(
+                        right: 25,
+                        left: 25,
+                        top: 24,
+                      ),
+                      child: LineChart(
+                        showAvg ? avgData() : mainData(),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                width: 60,
+                height: 34,
+                child: TextButton(
+                  onPressed: () {
+                    setState(() {
+                      showAvg = !showAvg;
+                    });
+                  },
+                  child: Text(
+                    'avg',
                     style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold),
+                      fontSize: 12,
+                      color: showAvg
+                          ? Colors.white.withValues(alpha: 0.5)
+                          : Colors.white,
+                    ),
                   ),
-                  Row(
-                    children: [
-                      Text("Week",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          )),
-                      SizedBox(width: 10),
-                      Text("Month",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          )),
-                      SizedBox(width: 10),
-                      Text("Year",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                          )),
-                    ],
-                  ),
-                ],
-              ),
-            )),
-        Container(
-          alignment: Alignment.topCenter,
-          decoration: BoxDecoration(color: Colors.blue.shade800),
-          child: AspectRatio(
-            aspectRatio: 1.3,
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                      setState(() {
-                        if (!event.isInterestedForInteractions ||
-                            pieTouchResponse == null ||
-                            pieTouchResponse.touchedSection == null) {
-                          touchedIndex = -1;
-                          return;
-                        }
-                        touchedIndex = pieTouchResponse
-                            .touchedSection!.touchedSectionIndex;
-                      });
-                    },
-                  ),
-                  borderData: FlBorderData(
-                    show: false,
-                  ),
-                  sectionsSpace: 0,
-                  centerSpaceRadius: 0,
-                  sections: showingSections(),
                 ),
               ),
-            ),
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.only(bottom: 27),
-          alignment: Alignment.bottomCenter,
-          decoration: BoxDecoration(color: Colors.blue.shade800),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              indicatorWithColor('Food & Drinks', Color(0xFFFF3AF2)),
-              indicatorWithColor('Utilities', Colors.red),
-              indicatorWithColor('Groceries', Color(0xFFFFC300)),
-              indicatorWithColor('Shopping', Color(0xFF6E1BFF)),
-            ],
-          ),
-        ),
-        Padding(
-            padding: const EdgeInsets.all(0.0),
-            child: Container(
-              padding: const EdgeInsets.only(
-                  top: 25, bottom: 0, left: 25, right: 25),
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Progress Rate ",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  Row(
-                    children: [
-                      Text("Week",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                          )),
-                      SizedBox(width: 15),
-                      Text("Month",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                          )),
-                      SizedBox(width: 15),
-                      Text("Year",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
-                          )),
-                    ],
-                  ),
-                ],
-              ),
-            )),
-        Expanded(
-          child: Container(
-            alignment: Alignment.topCenter,
-            child: AspectRatio(
-              aspectRatio: 1.90,
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  right: 25,
-                  left: 25,
-                  top: 24,
-                ),
-                child: LineChart(
-                  showAvg ? avgData() : mainData(),
-                ),
-              ),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 60,
-          height: 34,
-          child: TextButton(
-            onPressed: () {
-              setState(() {
-                showAvg = !showAvg;
-              });
-            },
-            child: Text(
-              'avg',
-              style: TextStyle(
-                fontSize: 12,
-                color: showAvg
-                    ? Colors.white.withValues(alpha: 0.5)
-                    : Colors.white,
-              ),
-            ),
-          ),
-        ),
-      ]),
+            ]),
       floatingActionButton: CustomFloatingActionButton(
         onPressed: () => showTransactionForm(context),
       ),
@@ -624,122 +742,6 @@ class AnalyticsPageState extends State<AnalyticsPage> {
         );
       },
     );
-  }
-
-  Widget indicatorWithColor(String text, Color color) {
-    double size = 15.0;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-      child: Row(
-        children: [
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              color: color,
-            ),
-          ),
-          SizedBox(width: 4),
-          Text(
-            text,
-            style: TextStyle(color: Colors.white, fontSize: 14),
-          ),
-        ],
-      ),
-    );
-  }
-
-  List<PieChartSectionData> showingSections() {
-    return List.generate(4, (i) {
-      final isTouched = i == touchedIndex;
-      final fontSize = isTouched ? 20.0 : 16.0;
-      final radius = isTouched ? 110.0 : 100.0;
-      final widgetSize = isTouched ? 55.0 : 40.0;
-      const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
-
-      switch (i) {
-        case 0:
-          return PieChartSectionData(
-            color: Color(0xFF6E1BFF),
-            value: 40,
-            title: '40%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              Icons.shopping_bag,
-              size: widgetSize,
-              borderColor: Colors.black,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        case 1:
-          return PieChartSectionData(
-            color: Colors.red,
-            value: 30,
-            title: '30%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              Icons.receipt_long,
-              size: widgetSize,
-              borderColor: Colors.black,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        case 2:
-          return PieChartSectionData(
-            color: Color(0xFFFF3AF2),
-            value: 16,
-            title: '16%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              Icons.restaurant,
-              size: widgetSize,
-              borderColor: Colors.black,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        case 3:
-          return PieChartSectionData(
-            color: Color(0xFFFFC300),
-            value: 15,
-            title: '15%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              Icons.local_grocery_store,
-              size: widgetSize,
-              borderColor: Colors.black,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        default:
-          throw Exception('Oh no');
-      }
-    });
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {

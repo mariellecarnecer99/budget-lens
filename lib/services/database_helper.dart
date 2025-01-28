@@ -155,4 +155,18 @@ class DatabaseHelper {
       return Category.fromMap(categoryMaps[i]);
     });
   }
+
+  // Analytics API
+  Future<List<Map<String, dynamic>>> fetchCategorySpending() async {
+    final db = await database;
+
+    final result = await db.rawQuery('''
+      SELECT t.category_name AS category, SUM(t.amount) AS total_spending
+      FROM transactions t
+      WHERE t.category_name != 'Salary' AND t.category_name != 'Earnings'
+      GROUP BY t.category_name
+    ''');
+
+    return result;
+  }
 }

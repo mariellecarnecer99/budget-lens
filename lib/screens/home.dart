@@ -19,10 +19,13 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   List<Transactions> transactionList = [];
 
+  late Future<List<Map<String, dynamic>>> categoryData;
+
   @override
   void initState() {
     super.initState();
     loadTransactions();
+    categoryData = DatabaseHelper().fetchCategorySpending();
   }
 
   @override
@@ -125,22 +128,43 @@ class _HomePageState extends State<HomePage> {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
-            child: Row(
-              children: [
-                buildTopSpendsChart("FOOD & DRINKS", Color(0xFFFF3AF2), .3),
-                const SizedBox(
-                  width: 2,
-                ),
-                buildTopSpendsChart("UTILITIES", Colors.red, .25),
-                const SizedBox(
-                  width: 2,
-                ),
-                buildTopSpendsChart("GROCERIES", Color(0xFFFFC300), .20),
-                const SizedBox(
-                  width: 2,
-                ),
-                buildTopSpendsChart("SHOPPING", Color(0xFF6E1BFF), .23),
-              ],
+            child: FutureBuilder<List<Map<String, dynamic>>>(
+              future: categoryData,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No data available.'));
+                }
+
+                List<Map<String, dynamic>> data = snapshot.data!;
+
+                double totalSpending =
+                    data.fold(0.0, (sum, item) => sum + item['total_spending']);
+
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: data.map((category) {
+                      double percentage =
+                          category['total_spending'] / totalSpending;
+                      return Row(
+                        children: [
+                          buildTopSpendsChart(
+                              category['category'],
+                              getCategoryColor(category['category']),
+                              percentage),
+                          const SizedBox(width: 2),
+                        ],
+                      );
+                    }).toList(),
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(
@@ -953,5 +977,22 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       transactionList = transactionsFromDb;
     });
+  }
+
+  Color getCategoryColor(String categoryName) {
+    switch (categoryName) {
+      case 'Food':
+        return Color(0xFFFF3AF2);
+      case 'Transport':
+        return Colors.red;
+      case 'Groceries':
+        return Color(0xFFFFC300);
+      case 'Shopping':
+        return Color(0xFF6E1BFF);
+      case 'Electronics':
+        return Color.fromARGB(255, 150, 114, 37);
+      default:
+        return Colors.grey;
+    }
   }
 }
