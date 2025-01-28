@@ -1,3 +1,6 @@
+import 'package:expense_tracker/models/category.dart';
+import 'package:expense_tracker/models/transactions.dart';
+import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/services.dart';
@@ -219,7 +222,10 @@ class AnalyticsPageState extends State<AnalyticsPage> {
     );
   }
 
-  void showTransactionForm(BuildContext context) {
+  void showTransactionForm(BuildContext context) async {
+    DatabaseHelper dbHelper = DatabaseHelper();
+    List<Category> categories = await dbHelper.getCategories();
+
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController transactionNameController =
         TextEditingController();
@@ -231,14 +237,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
         TextEditingController();
     DateTime? transactionDate;
     String? transactionCategory;
-
-    List<String> categories = [
-      'Food & Drinks',
-      'Utilities',
-      'Shopping',
-      'Groceries',
-      'Transport'
-    ];
+    String? transactionType;
 
     showDialog(
       context: context,
@@ -267,7 +266,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         'Add Transaction',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -282,139 +281,256 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                 ),
                 SizedBox(height: 20),
                 Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Form(
-                      key: formKey,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: transactionNameController,
-                            decoration: InputDecoration(
-                                labelText: 'Transaction name',
-                                border: OutlineInputBorder()),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter details';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                            controller: transactionAmountController,
-                            decoration: InputDecoration(
-                                labelText: 'Transaction Amount',
-                                prefixText: '\$',
-                                border: OutlineInputBorder()),
-                            keyboardType:
-                                TextInputType.numberWithOptions(decimal: true),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'^\d*\.?\d{0,2}')),
-                            ],
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter amount';
-                              }
-                              if (double.tryParse(value.replaceAll(
-                                      RegExp(r'[^\d.]'), '')) ==
-                                  null) {
-                                return 'Please enter a valid number';
-                              }
-                              return null;
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                            controller: transactionDateController,
-                            decoration: InputDecoration(
-                              labelText: 'Transaction Date',
-                              hintText: 'YYYY-MM-DD',
-                              border: OutlineInputBorder(),
-                              suffixIcon: IconButton(
-                                icon: Icon(Icons.calendar_today),
-                                onPressed: () async {
-                                  final DateTime? picked = await showDatePicker(
-                                    context: context,
-                                    initialDate:
-                                        transactionDate ?? DateTime.now(),
-                                    firstDate: DateTime(2000),
-                                    lastDate: DateTime(2101),
-                                  );
-                                  if (picked != null) {
-                                    transactionDate = picked;
-                                    String formattedDate =
-                                        DateFormat('yyyy-MM-dd')
-                                            .format(transactionDate!);
-                                    transactionDateController.text =
-                                        formattedDate;
-                                  }
-                                },
-                              ),
+                    key: formKey,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: transactionNameController,
+                          decoration: InputDecoration(
+                            labelText: 'Transaction Name',
+                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            keyboardType: TextInputType.datetime,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter a transaction date';
-                              }
-
-                              RegExp dateRegExp =
-                                  RegExp(r'^\d{4}-\d{2}-\d{2}$');
-                              if (!dateRegExp.hasMatch(value)) {
-                                return 'Please enter a valid date (YYYY-MM-DD)';
-                              }
-
-                              try {
-                                DateTime.parse(value);
-                              } catch (e) {
-                                return 'Please enter a valid date (YYYY-MM-DD)';
-                              }
-
-                              return null;
-                            },
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.blue.shade800),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
                           ),
-                          SizedBox(height: 20),
-                          DropdownButtonFormField<String>(
-                            value: transactionCategory,
-                            decoration: InputDecoration(
-                                labelText: 'Transaction Category',
-                                border: OutlineInputBorder()),
-                            items: categories
-                                .map((category) => DropdownMenuItem<String>(
-                                      value: category,
-                                      child: Text(category),
-                                    ))
-                                .toList(),
-                            onChanged: (value) {
-                              transactionCategory = value;
-                            },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please select a category';
-                              }
-                              return null;
-                            },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter details';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: transactionAmountController,
+                          decoration: InputDecoration(
+                            labelText: 'Transaction Amount',
+                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            prefixText: '\$',
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.blue.shade800),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
                           ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                            controller: transactionNotesController,
-                            decoration: InputDecoration(
-                                labelText: 'Transaction Notes',
-                                border: OutlineInputBorder()),
-                            maxLines: 5,
-                            keyboardType: TextInputType.multiline,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter notes';
-                              }
-                              return null;
-                            },
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'^\d*\.?\d{0,2}')),
+                          ],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter amount';
+                            }
+                            if (double.tryParse(
+                                    value.replaceAll(RegExp(r'[^\d.]'), '')) ==
+                                null) {
+                              return 'Please enter a valid number';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: transactionDateController,
+                          decoration: InputDecoration(
+                            labelText: 'Transaction Date',
+                            hintText: 'YYYY-MM-DD',
+                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.blue.shade800),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(Icons.calendar_today),
+                              onPressed: () async {
+                                final DateTime? picked = await showDatePicker(
+                                  context: context,
+                                  initialDate:
+                                      transactionDate ?? DateTime.now(),
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime(2101),
+                                );
+                                if (picked != null) {
+                                  transactionDate = picked;
+                                  String formattedDate =
+                                      DateFormat('yyyy-MM-dd')
+                                          .format(transactionDate!);
+                                  transactionDateController.text =
+                                      formattedDate;
+                                }
+                              },
+                            ),
                           ),
-                        ],
-                      )),
+                          keyboardType: TextInputType.datetime,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a transaction date';
+                            }
+                            RegExp dateRegExp = RegExp(r'^\d{4}-\d{2}-\d{2}$');
+                            if (!dateRegExp.hasMatch(value)) {
+                              return 'Please enter a valid date (YYYY-MM-DD)';
+                            }
+                            try {
+                              DateTime.parse(value);
+                            } catch (e) {
+                              return 'Please enter a valid date (YYYY-MM-DD)';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        DropdownButtonFormField<String>(
+                          value: transactionCategory,
+                          decoration: InputDecoration(
+                            labelText: 'Transaction Category',
+                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.blue.shade800),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
+                          ),
+                          items: categories
+                              .map((category) => DropdownMenuItem<String>(
+                                    value: category.name,
+                                    child: Text(category.name),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            transactionCategory = value;
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a category';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        DropdownButtonFormField<String>(
+                          value: transactionType,
+                          decoration: InputDecoration(
+                            labelText: 'Transaction Type',
+                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.blue.shade800),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
+                          ),
+                          items: ['Expense', 'Income']
+                              .map((type) => DropdownMenuItem<String>(
+                                    value: type,
+                                    child: Text(type),
+                                  ))
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              transactionType = value;
+                            });
+                          },
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a transaction type';
+                            }
+                            return null;
+                          },
+                        ),
+                        SizedBox(height: 20),
+                        TextFormField(
+                          controller: transactionNotesController,
+                          decoration: InputDecoration(
+                            labelText: 'Transaction Notes',
+                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.blue.shade800),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(15),
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade300),
+                            ),
+                          ),
+                          maxLines: 5,
+                          keyboardType: TextInputType.multiline,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter notes';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 16.0, horizontal: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -422,20 +538,30 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          backgroundColor: Colors.grey.shade200,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                         child: Text(
                           'Cancel',
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue.shade800,
+                          ),
                         ),
                       ),
+                      SizedBox(width: 10),
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (formKey.currentState?.validate() ?? false) {
                             String transactionName =
                                 transactionNameController.text;
-                            String transactionAmount =
+                            String transactionAmountStr =
                                 transactionAmountController.text;
                             String transactionNotes =
                                 transactionNotesController.text;
@@ -443,6 +569,13 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                                 transactionCategory ?? 'None';
                             String transactionDate =
                                 transactionDateController.text;
+                            String transactionTypeCat =
+                                transactionType ?? 'None';
+
+                            double transactionAmount = double.tryParse(
+                                    transactionAmountStr.replaceAll(
+                                        RegExp(r'[^\d.]'), '')) ??
+                                0.0;
 
                             DateTime? date = DateTime.tryParse(transactionDate);
                             String formattedDate = '';
@@ -451,26 +584,40 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                                   DateFormat('dd MMM yy').format(date);
                             }
 
-                            print('Transaction Name: $transactionName');
-                            print('Transaction Amount: $transactionAmount');
-                            print('Transaction Date: $formattedDate');
-                            print('Transaction Category: $transactionCat');
-                            print('Transaction Notes: $transactionNotes');
+                            Transactions newTransaction = Transactions(
+                                transactionName: transactionName,
+                                amount: transactionAmount,
+                                date: formattedDate,
+                                categoryName: transactionCat,
+                                notes: transactionNotes,
+                                transactionType: transactionTypeCat);
+
+                            DatabaseHelper dbHelper = DatabaseHelper();
+                            await dbHelper.insertTransaction(newTransaction);
 
                             Navigator.of(context).pop();
                           }
                         },
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 10),
+                          backgroundColor: Colors.blue.shade800,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
                         child: Text(
                           'Submit',
                           style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                )
+                ),
               ],
             ),
           ),

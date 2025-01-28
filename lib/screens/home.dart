@@ -412,7 +412,6 @@ class _HomePageState extends State<HomePage> {
                 icon: Icon(Icons.more_vert, color: Colors.blue.shade800),
                 onSelected: (value) {
                   if (value == 'edit') {
-                    print('Edit clicked');
                   } else if (value == 'delete') {
                     showDeleteConfirmationDialog(context, id);
                   }
@@ -805,6 +804,7 @@ class _HomePageState extends State<HomePage> {
 
                             DatabaseHelper dbHelper = DatabaseHelper();
                             await dbHelper.insertTransaction(newTransaction);
+                            loadTransactions();
 
                             Navigator.of(context).pop();
                           }
@@ -903,19 +903,16 @@ class _HomePageState extends State<HomePage> {
         (transaction) => transaction.id == id,
       );
     } catch (e) {
-      print("Transaction with ID $id not found");
       return;
     }
 
-    if (transactionToDelete != null) {
-      await dbHelper.deleteTransaction(transactionToDelete.id!);
+    await dbHelper.deleteTransaction(transactionToDelete.id!);
 
-      setState(() {
-        transactionList.removeWhere((transaction) => transaction.id == id);
-      });
+    setState(() {
+      transactionList.removeWhere((transaction) => transaction.id == id);
+    });
 
-      loadTransactions();
-    }
+    loadTransactions();
   }
 
   void loadTransactions() async {

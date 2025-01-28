@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 class CustomFloatingActionButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  CustomFloatingActionButton({required this.onPressed});
+  const CustomFloatingActionButton({super.key, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onTap;
 
-  CustomBottomNavigationBar({required this.selectedIndex, required this.onTap});
+  const CustomBottomNavigationBar(
+      {super.key, required this.selectedIndex, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
