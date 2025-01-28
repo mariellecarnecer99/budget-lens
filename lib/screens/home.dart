@@ -410,8 +410,13 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.zero,
               child: PopupMenuButton<String>(
                 icon: Icon(Icons.more_vert, color: Colors.blue.shade800),
-                onSelected: (value) {
+                onSelected: (value) async {
                   if (value == 'edit') {
+                    DatabaseHelper dbHelper = DatabaseHelper();
+                    Transactions? selectedTransaction =
+                        await dbHelper.getTransactionById(id);
+                    showTransactionForm(context,
+                        transaction: selectedTransaction);
                   } else if (value == 'delete') {
                     showDeleteConfirmationDialog(context, id);
                   }
@@ -432,22 +437,32 @@ class _HomePageState extends State<HomePage> {
         ));
   }
 
-  void showTransactionForm(BuildContext context) async {
+  void showTransactionForm(BuildContext context,
+      {Transactions? transaction}) async {
     DatabaseHelper dbHelper = DatabaseHelper();
     List<Category> categories = await dbHelper.getCategories();
 
     final GlobalKey<FormState> formKey = GlobalKey<FormState>();
     final TextEditingController transactionNameController =
-        TextEditingController();
+        TextEditingController(text: transaction?.transactionName ?? '');
     final TextEditingController transactionAmountController =
-        TextEditingController();
+        TextEditingController(
+            text: transaction?.amount.toStringAsFixed(2) ?? '');
     final TextEditingController transactionNotesController =
-        TextEditingController();
+        TextEditingController(text: transaction?.notes ?? '');
     final TextEditingController transactionDateController =
-        TextEditingController();
-    DateTime? transactionDate;
-    String? transactionCategory;
-    String? transactionType;
+        TextEditingController(text: transaction?.date ?? '');
+    DateTime? transactionDate = transaction != null
+        ? DateFormat('dd MMM yy').parse(transaction.date)
+        : null;
+
+    if (transactionDate != null) {
+      transactionDateController.text =
+          DateFormat('yyyy-MM-dd').format(transactionDate);
+    }
+
+    String? transactionCategory = transaction?.categoryName;
+    String? transactionType = transaction?.transactionType;
 
     showDialog(
       context: context,
@@ -473,7 +488,9 @@ class _HomePageState extends State<HomePage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Add Transaction',
+                        transaction == null
+                            ? 'Add Transaction'
+                            : 'Edit Transaction',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -803,7 +820,21 @@ class _HomePageState extends State<HomePage> {
                                 transactionType: transactionTypeCat);
 
                             DatabaseHelper dbHelper = DatabaseHelper();
-                            await dbHelper.insertTransaction(newTransaction);
+                            if (transaction == null) {
+                              await dbHelper.insertTransaction(newTransaction);
+                            } else {
+                              Transactions updatedTransaction = Transactions(
+                                id: transaction.id,
+                                transactionName: newTransaction.transactionName,
+                                amount: newTransaction.amount,
+                                date: newTransaction.date,
+                                categoryName: newTransaction.categoryName,
+                                notes: newTransaction.notes,
+                                transactionType: newTransaction.transactionType,
+                              );
+                              await dbHelper
+                                  .updateTransaction(updatedTransaction);
+                            }
                             loadTransactions();
 
                             Navigator.of(context).pop();

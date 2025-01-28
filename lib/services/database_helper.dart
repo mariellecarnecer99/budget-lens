@@ -50,8 +50,8 @@ class DatabaseHelper {
     return await db.insert('transactions', transaction.toMap());
   }
 
-  Future<int> updateCategoryTransaction(Transactions transaction) async {
-    var dbClient = await database;
+  Future<int> updateTransaction(Transactions transaction) async {
+    final dbClient = await database;
     return await dbClient.update(
       'transactions',
       transaction.toMap(),
@@ -65,6 +65,19 @@ class DatabaseHelper {
     final List<Map<String, dynamic>> queryResult =
         await db.query('transactions');
     return queryResult.map((e) => Transactions.fromMap(e)).toList();
+  }
+
+  Future<Transactions?> getTransactionById(int? id) async {
+    final db = await database;
+    List<Map<String, dynamic>> result = await db.query(
+      'transactions',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    if (result.isNotEmpty) {
+      return Transactions.fromMap(result.first);
+    }
+    return null;
   }
 
   Future<List<Map<String, dynamic>>> getTransactionsByType(String type) async {
