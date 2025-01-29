@@ -28,6 +28,8 @@ class AnalyticsPageState extends State<AnalyticsPage> {
   double totalSpending = 0.0;
   String? touchedCategory;
 
+  String groupBy = 'month';
+
   @override
   void initState() {
     super.initState();
@@ -148,54 +150,13 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                 alignment: Alignment.bottomCenter,
                 decoration: BoxDecoration(color: Colors.blue.shade800),
                 child: Text(
-                  "Analytics",
+                  "Top spending categories",
                   style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                       color: Colors.white),
                 ),
               ),
-              Padding(
-                  padding: const EdgeInsets.all(0.0),
-                  child: Container(
-                    padding: const EdgeInsets.only(
-                        top: 25, bottom: 0, left: 25, right: 25),
-                    alignment: Alignment.bottomCenter,
-                    decoration: BoxDecoration(color: Colors.blue.shade800),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "Top spending categories ",
-                          style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Row(
-                          children: [
-                            Text("Week",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                )),
-                            SizedBox(width: 10),
-                            Text("Month",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                )),
-                            SizedBox(width: 10),
-                            Text("Year",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 14,
-                                )),
-                          ],
-                        ),
-                      ],
-                    ),
-                  )),
               Container(
                 alignment: Alignment.topCenter,
                 decoration: BoxDecoration(color: Colors.blue.shade800),
@@ -256,71 +217,103 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Progress Rate ",
+                          "Your Financial Journey ",
                           style: TextStyle(
                               color: Colors.black,
                               fontSize: 18,
                               fontWeight: FontWeight.bold),
                         ),
-                        Row(
-                          children: [
-                            Text("Week",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                )),
-                            SizedBox(width: 15),
-                            Text("Month",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                )),
-                            SizedBox(width: 15),
-                            Text("Year",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                )),
-                          ],
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 12.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: Colors.blueAccent,
+                              width: 2.0,
+                            ),
+                          ),
+                          child: DropdownButton<String>(
+                            value: groupBy,
+                            underline: Container(),
+                            icon: Icon(Icons.arrow_drop_down),
+                            iconSize: 24,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
+                            items: [
+                              DropdownMenuItem(
+                                  value: 'week', child: Text('Week')),
+                              DropdownMenuItem(
+                                  value: 'month', child: Text('Month')),
+                              DropdownMenuItem(
+                                  value: 'year', child: Text('Year')),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                groupBy = value!;
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),
                   )),
               Expanded(
-                child: Container(
-                  alignment: Alignment.topCenter,
-                  child: AspectRatio(
-                    aspectRatio: 1.90,
-                    child: Padding(
-                      padding: const EdgeInsets.only(
-                        right: 25,
-                        left: 25,
-                        top: 24,
-                      ),
-                      child: LineChart(
-                        showAvg ? avgData() : mainData(),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                width: 60,
-                height: 34,
-                child: TextButton(
-                  onPressed: () {
-                    setState(() {
-                      showAvg = !showAvg;
-                    });
-                  },
-                  child: Text(
-                    'avg',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: showAvg
-                          ? Colors.white.withValues(alpha: 0.5)
-                          : Colors.white,
-                    ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: FutureBuilder<List<Map<String, dynamic>>>(
+                    future: DatabaseHelper().fetchSpendingData(groupBy),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+
+                      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        return Center(
+                            child: Text('No transactions available.'));
+                      }
+
+                      final groupedTransactions = snapshot.data!;
+
+                      return ListView.builder(
+                        itemCount: groupedTransactions.length,
+                        itemBuilder: (context, index) {
+                          final periodData = groupedTransactions[index];
+                          final period = periodData['period'];
+                          final transactions = periodData['transactions'];
+
+                          final totalSpent = transactions.fold(
+                              0.0, (sum, t) => sum + t['amount']);
+
+                          return ExpansionTile(
+                            title: Text('Transactions for $period'),
+                            subtitle: Text(
+                                'Total Spent: \$${totalSpent.toStringAsFixed(2)}'),
+                            children: transactions.map<Widget>((transaction) {
+                              final date = transaction['date'];
+                              final amount = transaction['amount'];
+                              final categoryName = transaction['category_name'];
+                              final transactionName =
+                                  transaction['transaction_name'];
+
+                              final formattedDate = DateFormat('MMMM dd, yyyy')
+                                  .format(DateTime.parse(date));
+
+                              return ListTile(
+                                leading: Icon(Icons.money),
+                                title: Text(transactionName),
+                                subtitle: Text(
+                                    'Category: $categoryName\nDate: $formattedDate'),
+                                trailing: Text('\$${amount.toStringAsFixed(2)}',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold)),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      );
+                    },
                   ),
                 ),
               ),
@@ -741,239 +734,6 @@ class AnalyticsPageState extends State<AnalyticsPage> {
           ),
         );
       },
-    );
-  }
-
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 16,
-    );
-    Widget text;
-    switch (value.toInt()) {
-      case 2:
-        text = const Text('MAR', style: style);
-        break;
-      case 5:
-        text = const Text('JUN', style: style);
-        break;
-      case 8:
-        text = const Text('SEP', style: style);
-        break;
-      default:
-        text = const Text('', style: style);
-        break;
-    }
-
-    return SideTitleWidget(
-      meta: meta,
-      child: text,
-    );
-  }
-
-  Widget leftTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
-      fontWeight: FontWeight.bold,
-      fontSize: 15,
-    );
-    String text;
-    switch (value.toInt()) {
-      case 1:
-        text = '10K';
-        break;
-      case 3:
-        text = '30k';
-        break;
-      case 5:
-        text = '50k';
-        break;
-      default:
-        return Container();
-    }
-
-    return Text(text, style: style, textAlign: TextAlign.left);
-  }
-
-  LineChartData mainData() {
-    return LineChartData(
-      gridData: FlGridData(
-        show: true,
-        drawVerticalLine: true,
-        horizontalInterval: 1,
-        verticalInterval: 1,
-        getDrawingHorizontalLine: (value) {
-          return const FlLine(
-            color: Colors.white10,
-            strokeWidth: 1,
-          );
-        },
-        getDrawingVerticalLine: (value) {
-          return const FlLine(
-            color: Colors.white10,
-            strokeWidth: 1,
-          );
-        },
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            interval: 1,
-            getTitlesWidget: bottomTitleWidgets,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            interval: 1,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
-          ),
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d)),
-      ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
-      lineBarsData: [
-        LineChartBarData(
-          spots: const [
-            FlSpot(0, 3),
-            FlSpot(2.6, 2),
-            FlSpot(4.9, 5),
-            FlSpot(6.8, 3.1),
-            FlSpot(8, 4),
-            FlSpot(9.5, 3),
-            FlSpot(11, 4),
-          ],
-          isCurved: true,
-          gradient: LinearGradient(
-            colors: gradientColors,
-          ),
-          barWidth: 5,
-          isStrokeCapRound: true,
-          dotData: const FlDotData(
-            show: false,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: gradientColors
-                  .map((color) => color.withValues(alpha: 0.3))
-                  .toList(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  LineChartData avgData() {
-    return LineChartData(
-      lineTouchData: const LineTouchData(enabled: false),
-      gridData: FlGridData(
-        show: true,
-        drawHorizontalLine: true,
-        verticalInterval: 1,
-        horizontalInterval: 1,
-        getDrawingVerticalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-        getDrawingHorizontalLine: (value) {
-          return const FlLine(
-            color: Color(0xff37434d),
-            strokeWidth: 1,
-          );
-        },
-      ),
-      titlesData: FlTitlesData(
-        show: true,
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            reservedSize: 30,
-            getTitlesWidget: bottomTitleWidgets,
-            interval: 1,
-          ),
-        ),
-        leftTitles: AxisTitles(
-          sideTitles: SideTitles(
-            showTitles: true,
-            getTitlesWidget: leftTitleWidgets,
-            reservedSize: 42,
-            interval: 1,
-          ),
-        ),
-        topTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-        rightTitles: const AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
-      ),
-      borderData: FlBorderData(
-        show: true,
-        border: Border.all(color: const Color(0xff37434d)),
-      ),
-      minX: 0,
-      maxX: 11,
-      minY: 0,
-      maxY: 6,
-      lineBarsData: [
-        LineChartBarData(
-          spots: const [
-            FlSpot(0, 3.44),
-            FlSpot(2.6, 3.44),
-            FlSpot(4.9, 3.44),
-            FlSpot(6.8, 3.44),
-            FlSpot(8, 3.44),
-            FlSpot(9.5, 3.44),
-            FlSpot(11, 3.44),
-          ],
-          isCurved: true,
-          gradient: LinearGradient(
-            colors: [
-              ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                  .lerp(0.2)!,
-              ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                  .lerp(0.2)!,
-            ],
-          ),
-          barWidth: 5,
-          isStrokeCapRound: true,
-          dotData: const FlDotData(
-            show: false,
-          ),
-          belowBarData: BarAreaData(
-            show: true,
-            gradient: LinearGradient(
-              colors: [
-                ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                    .lerp(0.2)!
-                    .withValues(alpha: 0.1),
-                ColorTween(begin: gradientColors[0], end: gradientColors[1])
-                    .lerp(0.2)!
-                    .withValues(alpha: 0.1),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

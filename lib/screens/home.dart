@@ -19,13 +19,10 @@ class _HomePageState extends State<HomePage> {
   int selectedIndex = 0;
   List<Transactions> transactionList = [];
 
-  late Future<List<Map<String, dynamic>>> categoryData;
-
   @override
   void initState() {
     super.initState();
     loadTransactions();
-    categoryData = DatabaseHelper().fetchCategorySpending();
   }
 
   @override
@@ -101,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w300,
-                            fontSize: 14,
+                            fontSize: 12,
                           ))
                     ])),
                 GestureDetector(
@@ -112,7 +109,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                   child: Text(
-                    "View Insights",
+                    "View Analytics",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -129,7 +126,7 @@ class _HomePageState extends State<HomePage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 25),
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: categoryData,
+              future: DatabaseHelper().fetchCategorySpending(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -476,14 +473,14 @@ class _HomePageState extends State<HomePage> {
         TextEditingController(text: transaction?.notes ?? '');
     final TextEditingController transactionDateController =
         TextEditingController(text: transaction?.date ?? '');
-    DateTime? transactionDate = transaction != null
-        ? DateFormat('dd MMM yy').parse(transaction.date)
-        : null;
+    // DateTime? transactionDate = transaction != null
+    //     ? DateFormat('dd MMM yy').parse(transaction.date)
+    //     : null;
 
-    if (transactionDate != null) {
-      transactionDateController.text =
-          DateFormat('yyyy-MM-dd').format(transactionDate);
-    }
+    // if (transactionDate != null) {
+    //   transactionDateController.text =
+    //       DateFormat('yyyy-MM-dd').format(transactionDate);
+    // }
 
     String? transactionCategory = transaction?.categoryName;
     String? transactionType = transaction?.transactionType;
@@ -633,16 +630,13 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () async {
                                 final DateTime? picked = await showDatePicker(
                                   context: context,
-                                  initialDate:
-                                      transactionDate ?? DateTime.now(),
+                                  initialDate: DateTime.now(),
                                   firstDate: DateTime(2000),
                                   lastDate: DateTime(2101),
                                 );
                                 if (picked != null) {
-                                  transactionDate = picked;
                                   String formattedDate =
-                                      DateFormat('yyyy-MM-dd')
-                                          .format(transactionDate!);
+                                      DateFormat('yyyy-MM-dd').format(picked);
                                   transactionDateController.text =
                                       formattedDate;
                                 }
@@ -832,7 +826,7 @@ class _HomePageState extends State<HomePage> {
                             String formattedDate = '';
                             if (date != null) {
                               formattedDate =
-                                  DateFormat('dd MMM yy').format(date);
+                                  DateFormat('yyyy-MM-dd').format(date);
                             }
 
                             Transactions newTransaction = Transactions(

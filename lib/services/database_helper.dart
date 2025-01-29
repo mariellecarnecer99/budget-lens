@@ -169,4 +169,68 @@ class DatabaseHelper {
 
     return result;
   }
+
+  Future<List<Map<String, dynamic>>> fetchSpendingData(String groupBy) async {
+    final db = await database;
+
+    final results = await db.rawQuery('''
+      SELECT date, amount, category_name, transaction_name FROM transactions ORDER BY date
+    ''');
+
+    List<Map<String, dynamic>> groupedTransactions = [];
+
+    for (var row in results) {
+      String date = row['date'] as String;
+      double amount = row['amount'] as double;
+      String categoryName = row['category_name'] as String;
+      String transactionName = row['transaction_name'] as String;
+
+      String period = '';
+
+      if (groupBy == 'week') {
+        final dateTime = DateTime.parse(date);
+        final firstDayOfYear = DateTime(dateTime.year, 1, 1);
+        final daysSinceStartOfYear = dateTime.difference(firstDayOfYear).inDays;
+        final weekOfYear = ((daysSinceStartOfYear + 1) / 7).ceil();
+        period = 'Week $weekOfYear, ${dateTime.year}';
+      } else if (groupBy == 'month') {
+        final dateTime = DateTime.parse(date);
+        period =
+            '${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}';
+      } else if (groupBy == 'year') {
+        final dateTime = DateTime.parse(date);
+        period = '${dateTime.year}';
+      }
+
+      bool periodExists = false;
+      for (var existing in groupedTransactions) {
+        if (existing['period'] == period) {
+          existing['transactions'].add({
+            'date': date,
+            'amount': amount,
+            'category_name': categoryName,
+            'transaction_name': transactionName,
+          });
+          periodExists = true;
+          break;
+        }
+      }
+
+      if (!periodExists) {
+        groupedTransactions.add({
+          'period': period,
+          'transactions': [
+            {
+              'date': date,
+              'amount': amount,
+              'category_name': categoryName,
+              'transaction_name': transactionName,
+            }
+          ],
+        });
+      }
+    }
+
+    return groupedTransactions;
+  }
 }
