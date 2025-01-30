@@ -511,14 +511,6 @@ class _HomePageState extends State<HomePage> {
         TextEditingController(text: transaction?.notes ?? '');
     final TextEditingController transactionDateController =
         TextEditingController(text: transaction?.date ?? '');
-    // DateTime? transactionDate = transaction != null
-    //     ? DateFormat('dd MMM yy').parse(transaction.date)
-    //     : null;
-
-    // if (transactionDate != null) {
-    //   transactionDateController.text =
-    //       DateFormat('yyyy-MM-dd').format(transactionDate);
-    // }
 
     String? transactionCategory = transaction?.categoryName;
     String? transactionType = transaction?.transactionType;
@@ -526,6 +518,7 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -606,7 +599,10 @@ class _HomePageState extends State<HomePage> {
                           decoration: InputDecoration(
                             labelText: 'Transaction Amount',
                             labelStyle: TextStyle(color: Colors.grey.shade600),
-                            prefixText: '\$',
+                            prefixText: selectedCurrencyIcon is String ? selectedCurrencyIcon : null,
+                            prefixIcon: selectedCurrencyIcon is IconData
+                                ? Icon(selectedCurrencyIcon)
+                                : null,
                             filled: true,
                             fillColor: Colors.grey.shade100,
                             border: OutlineInputBorder(
