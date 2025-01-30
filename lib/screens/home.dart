@@ -1,11 +1,13 @@
 import 'package:expense_tracker/models/category.dart';
 import 'package:expense_tracker/models/transactions.dart';
+import 'package:expense_tracker/providers/currency_provider.dart';
 import 'package:expense_tracker/screens/analytics.dart';
 import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'navbar.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -232,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                           transaction.transactionName,
                           transaction.date,
                           transaction.categoryName,
-                          "\$${transaction.amount.toStringAsFixed(2)}");
+                          transaction.amount.toStringAsFixed(2));
                     }),
                   ],
                 );
@@ -282,6 +284,7 @@ class _HomePageState extends State<HomePage> {
 
   Column buildCashFlowColumn(
       IconData icon, String category, Future<double> amount) {
+    final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -331,13 +334,31 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   } else if (snapshot.hasData) {
-                    return Text(
-                      snapshot.data!.toStringAsFixed(2),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.blue.shade800,
-                      ),
+                    return Row(
+                      children: [
+                        selectedCurrencyIcon is IconData
+                            ? Icon(
+                          selectedCurrencyIcon,
+                          color: Colors.blue.shade800,
+                          size: 16,
+                        )
+                            : Text(
+                          selectedCurrencyIcon,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                        // SizedBox(width: 2),
+                        Text(
+                          snapshot.data!.toStringAsFixed(2),
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue.shade800,
+                          ),
+                        ),
+                      ],
                     );
                   } else {
                     return Text(
@@ -360,6 +381,7 @@ class _HomePageState extends State<HomePage> {
 
   Container buildTransactionRow(int? id, String transactionName, String date,
       String categoryName, String amount) {
+    final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
     return Container(
         margin: EdgeInsets.only(bottom: 8),
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -420,12 +442,28 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            Text(
-              amount,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                selectedCurrencyIcon is IconData
+                    ? Icon(
+                  selectedCurrencyIcon,
+                  size: 18,
+                )
+                    : Text(
+                  selectedCurrencyIcon,
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+                // SizedBox(width: 2),
+                Text(
+                  amount,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
             Padding(
               padding: EdgeInsets.zero,

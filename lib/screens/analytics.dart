@@ -1,11 +1,13 @@
 import 'package:expense_tracker/models/category.dart';
 import 'package:expense_tracker/models/transactions.dart';
+import 'package:expense_tracker/providers/currency_provider.dart';
 import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'navbar.dart';
+import 'package:provider/provider.dart';
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});
@@ -140,6 +142,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
     return Scaffold(
       backgroundColor: Colors.grey[100],
       body: categorySpendings.isEmpty
@@ -288,8 +291,29 @@ class AnalyticsPageState extends State<AnalyticsPage> {
 
                           return ExpansionTile(
                             title: Text('Transactions for $period'),
-                            subtitle: Text(
-                                'Total Spent: \$${totalSpent.toStringAsFixed(2)}'),
+                            subtitle: Row(
+                              children: [
+                                Text(
+                                  'Total Spent: ',
+                                  style: TextStyle(fontSize: 16),
+                                ),
+                                selectedCurrencyIcon is IconData
+                                    ? Icon(
+                                  selectedCurrencyIcon,
+                                  color: Colors.blue.shade800,
+                                )
+                                    : Text(
+                                  selectedCurrencyIcon,
+                                  style: TextStyle(
+                                    fontSize: 16, color: Colors.blue.shade800
+                                  ),
+                                ),
+                                Text(
+                                  '${totalSpent.toStringAsFixed(2)}',
+                                  style: TextStyle(fontSize: 16, color: Colors.blue.shade800),
+                                ),
+                              ],
+                            ),
                             children: transactions.map<Widget>((transaction) {
                               final date = transaction['date'];
                               final amount = transaction['amount'];
@@ -305,9 +329,28 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                                 title: Text(transactionName),
                                 subtitle: Text(
                                     'Category: $categoryName\nDate: $formattedDate'),
-                                trailing: Text('\$${amount.toStringAsFixed(2)}',
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold)),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    selectedCurrencyIcon is IconData
+                                        ? Icon(
+                                      selectedCurrencyIcon,
+                                      size: 20,
+                                    )
+                                        : Text(
+                                      selectedCurrencyIcon,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    Text(
+                                      amount.toStringAsFixed(2),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               );
                             }).toList(),
                           );

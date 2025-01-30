@@ -1,4 +1,6 @@
+import 'package:expense_tracker/providers/currency_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CurrencyPage extends StatefulWidget {
   const CurrencyPage({super.key});
@@ -17,32 +19,9 @@ class CurrencyPageState extends State<CurrencyPage> {
     {"name": "PHP", "icon": '₱'},
   ];
 
-  String? selectedCurrency;
-
-  @override
-  void initState() {
-    super.initState();
-    selectedCurrency = 'PHP';
-  }
-
-  void selectCurrency(String currency) {
-    setState(() {
-      selectedCurrency = currency;
-    });
-  }
-
-  void onDone() {
-    if (selectedCurrency != null) {
-      Navigator.pop(context, selectedCurrency);
-    }
-  }
-
-  void onCancel() {
-    Navigator.pop(context);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final selectedCurrencyIcon  = context.watch<CurrencyProvider>().selectedCurrencyIcon;
     return Scaffold(
       appBar: AppBar(
         title: Text("Select Currency"),
@@ -54,63 +33,36 @@ class CurrencyPageState extends State<CurrencyPage> {
               children: [
                 currency['icon'] is IconData
                     ? Icon(
-                        currency['icon'],
-                        color: Colors.blue,
-                        size: 25,
-                      )
+                  currency['icon'],
+                  color: Colors.blue,
+                  size: 25,
+                )
                     : Text(
-                        currency['icon'],
-                        style: TextStyle(
-                          fontSize: 25,
-                          color: Colors.blue,
-                        ),
-                      ),
-                SizedBox(width: 8),
-                Text(currency['name']),
+                  currency['icon'],
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: Colors.blue,
+                  ),
+                ),
+                SizedBox(width: 8),  // Add some space between the icon and the name
+                Text(
+                  currency['name'],
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.blue,
+                  ),
+                ),
               ],
             ),
-            trailing: selectedCurrency == currency['name']
+            trailing: selectedCurrencyIcon == currency['icon']
                 ? Icon(Icons.check_circle, color: Colors.blue.shade800)
                 : null,
-            onTap: () => selectCurrency(currency['name']!),
+            onTap: () {
+              context.read<CurrencyProvider>().selectCurrency(currency['icon']);
+              Navigator.pop(context, currency['icon']);
+            },
           );
         }).toList(),
-      ),
-      bottomSheet: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            ElevatedButton(
-              onPressed: onCancel,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                shape: CircleBorder(),
-                padding: EdgeInsets.all(16),
-              ),
-              child: Icon(
-                Icons.close,
-                color: Colors.red,
-                size: 28,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: onDone,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                elevation: 0,
-                shape: CircleBorder(),
-                padding: EdgeInsets.all(16),
-              ),
-              child: Icon(
-                Icons.check,
-                color: Colors.green,
-                size: 28,
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
