@@ -320,7 +320,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                                   .format(DateTime.parse(date));
 
                               return ListTile(
-                                leading: Icon(Icons.money),
+                                leading: Icon(Icons.payment),
                                 title: Text(transactionName),
                                 subtitle: Text(
                                     'Category: $categoryName\nDate: $formattedDate'),
@@ -330,13 +330,10 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                                     selectedCurrencyIcon is IconData
                                         ? Icon(
                                       selectedCurrencyIcon,
-                                      size: 20,
+                                      size: 14,
                                     )
                                         : Text(
                                       selectedCurrencyIcon,
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ),
                                     ),
                                     Text(
                                       amount.toStringAsFixed(2),
@@ -355,6 +352,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 50),
             ]),
       floatingActionButton: CustomFloatingActionButton(
         onPressed: () => showTransactionForm(context),
@@ -794,7 +792,7 @@ class _Badge extends StatelessWidget {
       ),
       padding: EdgeInsets.all(size * .15),
       child: Center(
-        child: Icon(icon),
+        child: Icon(icon, color: Colors.black),
       ),
     );
   }
