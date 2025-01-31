@@ -35,7 +35,6 @@ class CategoriesPageState extends State<CategoriesPage> {
               children: [
                 Text("Add Category",
                     style: TextStyle(
-                      color: Colors.black,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     )),
@@ -104,7 +103,6 @@ class CategoriesPageState extends State<CategoriesPage> {
                 Text(
                   "Edit Category",
                   style: TextStyle(
-                    color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),

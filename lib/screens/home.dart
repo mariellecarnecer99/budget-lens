@@ -1,7 +1,9 @@
 import 'package:expense_tracker/models/category.dart';
 import 'package:expense_tracker/models/transactions.dart';
 import 'package:expense_tracker/providers/currency_provider.dart';
+import 'package:expense_tracker/providers/theme_provider.dart';
 import 'package:expense_tracker/screens/analytics.dart';
+import 'package:expense_tracker/theme/custom_toggle_switch.dart';
 import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,8 +32,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     availableScreenWidth = MediaQuery.of(context).size.width - 50;
+    bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       body: Column(
         children: [
           Container(
@@ -59,23 +61,12 @@ class _HomePageState extends State<HomePage> {
                     )
                   ],
                 ),
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.black.withValues(alpha: 0.1)),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: Icon(
-                          Icons.search,
-                          size: 28,
-                          color: Colors.white,
-                        ),
-                      ),
-                    )
-                  ],
-                )
+                CustomToggleSwitch(
+                  value: isDarkMode,
+                  onChanged: (newValue) {
+                    context.read<ThemeProvider>().toggleTheme();
+                  },
+                ),
               ],
             ),
           ),
@@ -90,18 +81,12 @@ class _HomePageState extends State<HomePage> {
                 RichText(
                     text: TextSpan(
                         text: "Top spends ",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.bodyMedium,
                         children: [
                       TextSpan(
                           text: "Breakdown",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.w300,
-                            fontSize: 12,
-                          ))
+                          style: TextStyle(fontWeight: FontWeight.w300, fontSize: 12),
+                      )
                     ])),
                 GestureDetector(
                   onTap: () {
@@ -219,7 +204,6 @@ class _HomePageState extends State<HomePage> {
                         Text(
                           "Transaction History",
                           style: TextStyle(
-                              color: Colors.black,
                               fontSize: 18,
                               fontWeight: FontWeight.bold),
                         ),
@@ -415,7 +399,7 @@ class _HomePageState extends State<HomePage> {
                     Text(
                       transactionName,
                       style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                     SizedBox(height: 4),
                     Row(
@@ -447,12 +431,13 @@ class _HomePageState extends State<HomePage> {
                 selectedCurrencyIcon is IconData
                     ? Icon(
                   selectedCurrencyIcon,
-                  size: 18,
+                  size: 18, color: Colors.black
                 )
                     : Text(
                   selectedCurrencyIcon,
                   style: TextStyle(
                     fontSize: 18,
+                      color: Colors.black
                   ),
                 ),
                 // SizedBox(width: 2),
@@ -461,6 +446,7 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
+                    color: Colors.black
                   ),
                 ),
               ],
@@ -568,20 +554,17 @@ class _HomePageState extends State<HomePage> {
                         TextFormField(
                           controller: transactionNameController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Name',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Name',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -597,24 +580,21 @@ class _HomePageState extends State<HomePage> {
                         TextFormField(
                           controller: transactionAmountController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Amount',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
+                            hintText: 'Transaction Amount',
                             prefixText: selectedCurrencyIcon is String ? selectedCurrencyIcon : null,
                             prefixIcon: selectedCurrencyIcon is IconData
                                 ? Icon(selectedCurrencyIcon)
                                 : null,
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -641,21 +621,17 @@ class _HomePageState extends State<HomePage> {
                         TextFormField(
                           controller: transactionDateController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Date',
-                            hintText: 'YYYY-MM-DD',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Date (YYYY-MM-DD)',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -698,20 +674,17 @@ class _HomePageState extends State<HomePage> {
                         DropdownButtonFormField<String>(
                           value: transactionCategory,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Category',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Category',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -736,20 +709,17 @@ class _HomePageState extends State<HomePage> {
                         DropdownButtonFormField<String>(
                           value: transactionType,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Type',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Type',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -776,20 +746,17 @@ class _HomePageState extends State<HomePage> {
                         TextFormField(
                           controller: transactionNotesController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Notes',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Notes',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),

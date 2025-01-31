@@ -1,5 +1,6 @@
 import 'package:expense_tracker/models/category.dart';
 import 'package:expense_tracker/models/transactions.dart';
+import 'package:expense_tracker/providers/currency_provider.dart';
 import 'package:expense_tracker/screens/categories.dart';
 import 'package:expense_tracker/screens/currency.dart';
 import 'package:expense_tracker/services/database_helper.dart';
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'navbar.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -100,7 +102,7 @@ class SettingsPageState extends State<SettingsPage> {
         leading: Icon(icon, color: Colors.blue.shade800),
         title: Text(
           title,
-          style: TextStyle(fontSize: 18, color: Colors.black),
+          style: TextStyle(fontSize: 18),
         ),
         trailing: Icon(Icons.arrow_forward, color: Colors.blue.shade800),
         onTap: onTap,
@@ -128,6 +130,7 @@ class SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -175,20 +178,17 @@ class SettingsPageState extends State<SettingsPage> {
                         TextFormField(
                           controller: transactionNameController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Name',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Name',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -204,21 +204,21 @@ class SettingsPageState extends State<SettingsPage> {
                         TextFormField(
                           controller: transactionAmountController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Amount',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            prefixText: '\$',
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Amount',
+                            prefixText: selectedCurrencyIcon is String ? selectedCurrencyIcon : null,
+                            prefixIcon: selectedCurrencyIcon is IconData
+                                ? Icon(selectedCurrencyIcon)
+                                : null,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -245,21 +245,17 @@ class SettingsPageState extends State<SettingsPage> {
                         TextFormField(
                           controller: transactionDateController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Date',
-                            hintText: 'YYYY-MM-DD',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Date (YYYY-MM-DD)',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -305,20 +301,17 @@ class SettingsPageState extends State<SettingsPage> {
                         DropdownButtonFormField<String>(
                           value: transactionCategory,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Category',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Category',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -343,20 +336,17 @@ class SettingsPageState extends State<SettingsPage> {
                         DropdownButtonFormField<String>(
                           value: transactionType,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Type',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Type',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -383,20 +373,17 @@ class SettingsPageState extends State<SettingsPage> {
                         TextFormField(
                           controller: transactionNotesController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Notes',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Notes',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -467,7 +454,7 @@ class SettingsPageState extends State<SettingsPage> {
                             String formattedDate = '';
                             if (date != null) {
                               formattedDate =
-                                  DateFormat('dd MMM yy').format(date);
+                                  DateFormat('yyyy-MM-dd').format(date);
                             }
 
                             Transactions newTransaction = Transactions(

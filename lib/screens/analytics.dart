@@ -131,7 +131,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
             SizedBox(width: 8),
             Text(
               category,
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal, color: Colors.white),
             ),
             SizedBox(width: 8),
           ],
@@ -144,7 +144,6 @@ class AnalyticsPageState extends State<AnalyticsPage> {
   Widget build(BuildContext context) {
     final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
     return Scaffold(
-      backgroundColor: Colors.grey[100],
       body: categorySpendings.isEmpty
           ? Center(child: CircularProgressIndicator())
           : Column(children: [
@@ -222,7 +221,6 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         Text(
                           "Your Financial Journey ",
                           style: TextStyle(
-                              color: Colors.black,
                               fontSize: 18,
                               fontWeight: FontWeight.bold),
                         ),
@@ -240,10 +238,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                             underline: Container(),
                             icon: Icon(Icons.arrow_drop_down),
                             iconSize: 24,
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                            ),
+                            style: Theme.of(context).textTheme.bodySmall,
                             items: [
                               DropdownMenuItem(
                                   value: 'week', child: Text('Week')),
@@ -396,6 +391,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -443,20 +439,17 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         TextFormField(
                           controller: transactionNameController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Name',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Name',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -472,21 +465,21 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         TextFormField(
                           controller: transactionAmountController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Amount',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            prefixText: '\$',
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Amount',
+                            prefixText: selectedCurrencyIcon is String ? selectedCurrencyIcon : null,
+                            prefixIcon: selectedCurrencyIcon is IconData
+                                ? Icon(selectedCurrencyIcon)
+                                : null,
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -513,21 +506,17 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         TextFormField(
                           controller: transactionDateController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Date',
-                            hintText: 'YYYY-MM-DD',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Date (YYYY-MM-DD)',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -573,20 +562,17 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         DropdownButtonFormField<String>(
                           value: transactionCategory,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Category',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Category',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -611,20 +597,17 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         DropdownButtonFormField<String>(
                           value: transactionType,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Type',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Type',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -651,20 +634,17 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         TextFormField(
                           controller: transactionNotesController,
                           decoration: InputDecoration(
-                            labelText: 'Transaction Notes',
-                            labelStyle: TextStyle(color: Colors.grey.shade600),
-                            filled: true,
-                            fillColor: Colors.grey.shade100,
+                            hintText: 'Transaction Notes',
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.blue.shade800),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(12),
                               borderSide:
                                   BorderSide(color: Colors.grey.shade300),
                             ),
@@ -735,7 +715,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                             String formattedDate = '';
                             if (date != null) {
                               formattedDate =
-                                  DateFormat('dd MMM yy').format(date);
+                                  DateFormat('yyyy-MM-dd').format(date);
                             }
 
                             Transactions newTransaction = Transactions(
