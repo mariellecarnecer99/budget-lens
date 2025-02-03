@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'navbar.dart';
 import 'package:provider/provider.dart';
+import 'package:expense_tracker/generated/l10n.dart';
 
 class AnalyticsPage extends StatefulWidget {
   const AnalyticsPage({super.key});
@@ -143,6 +144,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
   @override
   Widget build(BuildContext context) {
     final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
+    final localization = S.of(context);
     return Scaffold(
       body: categorySpendings.isEmpty
           ? Center(child: CircularProgressIndicator())
@@ -152,7 +154,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                 alignment: Alignment.bottomCenter,
                 decoration: BoxDecoration(color: Colors.blue.shade800),
                 child: Text(
-                  "Top spending categories",
+                  localization.topSpendingCategories,
                   style: TextStyle(
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
@@ -219,7 +221,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Your Financial Journey ",
+                          localization.financialJourney,
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold),
@@ -241,11 +243,11 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                             style: Theme.of(context).textTheme.bodySmall,
                             items: [
                               DropdownMenuItem(
-                                  value: 'week', child: Text('Week')),
+                                  value: 'week', child: Text(localization.week)),
                               DropdownMenuItem(
-                                  value: 'month', child: Text('Month')),
+                                  value: 'month', child: Text(localization.month)),
                               DropdownMenuItem(
-                                  value: 'year', child: Text('Year')),
+                                  value: 'year', child: Text(localization.year)),
                             ],
                             onChanged: (value) {
                               setState(() {
@@ -269,7 +271,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
 
                       if (!snapshot.hasData || snapshot.data!.isEmpty) {
                         return Center(
-                            child: Text('No transactions available.'));
+                            child: Text(localization.noTransactions));
                       }
 
                       final groupedTransactions = snapshot.data!;
@@ -285,11 +287,11 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                               0.0, (sum, t) => sum + t['amount']);
 
                           return ExpansionTile(
-                            title: Text('Transactions for $period'),
+                            title: Text("${localization.transactionsFor} $period"),
                             subtitle: Row(
                               children: [
                                 Text(
-                                  'Total Spent: ',
+                                  "${localization.totalSpent}: ",
                                   style: TextStyle(fontSize: 16),
                                 ),
                                 selectedCurrencyIcon is IconData
@@ -323,7 +325,8 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                                 leading: Icon(Icons.payment),
                                 title: Text(transactionName),
                                 subtitle: Text(
-                                    'Category: $categoryName\nDate: $formattedDate'),
+                                    "${localization.category}: $categoryName\n${localization.date}: $formattedDate"
+                                ),
                                 trailing: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [

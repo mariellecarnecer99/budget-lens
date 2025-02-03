@@ -1,6 +1,7 @@
 import 'package:expense_tracker/providers/currency_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:expense_tracker/generated/l10n.dart';
 
 class CurrencyPage extends StatefulWidget {
   const CurrencyPage({super.key});
@@ -22,9 +23,10 @@ class CurrencyPageState extends State<CurrencyPage> {
   @override
   Widget build(BuildContext context) {
     final selectedCurrencyIcon  = context.watch<CurrencyProvider>().selectedCurrencyIcon;
+    final localization = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Select Currency"),
+        title: Text(localization.selectCurrency),
       ),
       body: ListView(
         children: currencies.map((currency) {

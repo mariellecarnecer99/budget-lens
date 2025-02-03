@@ -1,3 +1,4 @@
+import 'package:expense_tracker/generated/l10n.dart';
 import 'package:expense_tracker/models/category.dart';
 import 'package:expense_tracker/models/transactions.dart';
 import 'package:expense_tracker/providers/currency_provider.dart';
@@ -33,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     availableScreenWidth = MediaQuery.of(context).size.width - 50;
     bool isDarkMode = context.watch<ThemeProvider>().isDarkMode;
+    final localization = S.of(context);
     return Scaffold(
       body: Column(
         children: [
@@ -47,7 +49,7 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
                       "BudgetLens",
                       style: TextStyle(
@@ -56,7 +58,7 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white),
                     ),
                     Text(
-                      "Your financial snapshot",
+                      localization.tagLine,
                       style: TextStyle(fontSize: 17, color: Colors.white),
                     )
                   ],
@@ -80,11 +82,11 @@ class _HomePageState extends State<HomePage> {
               children: [
                 RichText(
                     text: TextSpan(
-                        text: "Top spends ",
+                        text: "${localization.breakdown} ",
                         style: Theme.of(context).textTheme.bodyMedium,
                         children: [
                       TextSpan(
-                          text: "Breakdown",
+                          text: localization.breakdownSmallText,
                           style: TextStyle(fontWeight: FontWeight.w300, fontSize: 12),
                       )
                     ])),
@@ -96,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   },
                   child: Text(
-                    "View Analytics",
+                    localization.viewAnalytics,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -122,7 +124,7 @@ class _HomePageState extends State<HomePage> {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 }
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No data available.'));
+                  return Center(child: Text(localization.noData));
                 }
 
                 List<Map<String, dynamic>> data = snapshot.data!;
@@ -170,7 +172,7 @@ class _HomePageState extends State<HomePage> {
                 }
 
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No transactions available.'));
+                  return Center(child: Text(localization.noTransactions));
                 }
 
                 final transactions = snapshot.data!;
@@ -178,8 +180,8 @@ class _HomePageState extends State<HomePage> {
                 return ListView(
                   padding: EdgeInsets.all(25),
                   children: [
-                    const Text(
-                      "Cash Flow",
+                    Text(
+                      localization.cashFlow,
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
@@ -189,12 +191,12 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       children: [
                         buildCashFlowColumn(Icons.account_balance_wallet,
-                            "Income", DatabaseHelper().getTotalIncome()),
+                            localization.income, DatabaseHelper().getTotalIncome()),
                         SizedBox(width: availableScreenWidth * .03),
-                        buildCashFlowColumn(Icons.monetization_on, "Balance",
+                        buildCashFlowColumn(Icons.monetization_on, localization.balance,
                             DatabaseHelper().getBalance()),
                         SizedBox(width: availableScreenWidth * .03),
-                        buildCashFlowColumn(Icons.payments, "Expense",
+                        buildCashFlowColumn(Icons.payments, localization.expense,
                             DatabaseHelper().getTotalExpenses())
                       ],
                     ),
@@ -202,7 +204,7 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       children: [
                         Text(
-                          "Transaction History",
+                          localization.transactionHistory,
                           style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold),
@@ -269,6 +271,7 @@ class _HomePageState extends State<HomePage> {
   Column buildCashFlowColumn(
       IconData icon, String category, Future<double> amount) {
     final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
+    final localization = S.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -346,7 +349,7 @@ class _HomePageState extends State<HomePage> {
                     );
                   } else {
                     return Text(
-                      'No data available',
+                      localization.noData,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -366,6 +369,7 @@ class _HomePageState extends State<HomePage> {
   Container buildTransactionRow(int? id, String transactionName, String date,
       String categoryName, String amount) {
     final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
+    final localization = S.of(context);
     return Container(
         margin: EdgeInsets.only(bottom: 8),
         padding: EdgeInsets.symmetric(horizontal: 20),
@@ -469,11 +473,11 @@ class _HomePageState extends State<HomePage> {
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   PopupMenuItem<String>(
                     value: 'edit',
-                    child: Text('Edit'),
+                    child: Text(localization.edit),
                   ),
                   PopupMenuItem<String>(
                     value: 'delete',
-                    child: Text('Delete'),
+                    child: Text(localization.delete),
                   ),
                 ],
               ),
@@ -505,6 +509,7 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
+        final localization = S.of(context);
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -527,8 +532,8 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Text(
                         transaction == null
-                            ? 'Add Transaction'
-                            : 'Edit Transaction',
+                            ? localization.addTransaction
+                            : localization.editTransaction,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -554,7 +559,7 @@ class _HomePageState extends State<HomePage> {
                         TextFormField(
                           controller: transactionNameController,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Name',
+                            hintText: localization.transactionName,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -571,7 +576,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter details';
+                              return localization.pleaseEnterDetails;
                             }
                             return null;
                           },
@@ -580,7 +585,7 @@ class _HomePageState extends State<HomePage> {
                         TextFormField(
                           controller: transactionAmountController,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Amount',
+                            hintText: localization.transactionAmount,
                             prefixText: selectedCurrencyIcon is String ? selectedCurrencyIcon : null,
                             prefixIcon: selectedCurrencyIcon is IconData
                                 ? Icon(selectedCurrencyIcon)
@@ -607,12 +612,12 @@ class _HomePageState extends State<HomePage> {
                           ],
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter amount';
+                              return localization.pleaseEnterAmount;
                             }
                             if (double.tryParse(
                                     value.replaceAll(RegExp(r'[^\d.]'), '')) ==
                                 null) {
-                              return 'Please enter a valid number';
+                              return localization.pleaseEnterAValidNumber;
                             }
                             return null;
                           },
@@ -621,7 +626,7 @@ class _HomePageState extends State<HomePage> {
                         TextFormField(
                           controller: transactionDateController,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Date (YYYY-MM-DD)',
+                            hintText: localization.transactionDate,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -656,16 +661,16 @@ class _HomePageState extends State<HomePage> {
                           keyboardType: TextInputType.datetime,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter a transaction date';
+                              return localization.pleaseEnterTransactionDate;
                             }
                             RegExp dateRegExp = RegExp(r'^\d{4}-\d{2}-\d{2}$');
                             if (!dateRegExp.hasMatch(value)) {
-                              return 'Please enter a valid date (YYYY-MM-DD)';
+                              return localization.pleaseEnterValidDate;
                             }
                             try {
                               DateTime.parse(value);
                             } catch (e) {
-                              return 'Please enter a valid date (YYYY-MM-DD)';
+                              return localization.pleaseEnterValidDate;
                             }
                             return null;
                           },
@@ -674,7 +679,7 @@ class _HomePageState extends State<HomePage> {
                         DropdownButtonFormField<String>(
                           value: transactionCategory,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Category',
+                            hintText: localization.transactionCategory,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -700,7 +705,7 @@ class _HomePageState extends State<HomePage> {
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select a category';
+                              return localization.pleaseSelectCategory;
                             }
                             return null;
                           },
@@ -709,7 +714,7 @@ class _HomePageState extends State<HomePage> {
                         DropdownButtonFormField<String>(
                           value: transactionType,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Type',
+                            hintText: localization.transactionType,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -737,7 +742,7 @@ class _HomePageState extends State<HomePage> {
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select a transaction type';
+                              return localization.pleaseEnterTransactionType;
                             }
                             return null;
                           },
@@ -746,7 +751,7 @@ class _HomePageState extends State<HomePage> {
                         TextFormField(
                           controller: transactionNotesController,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Notes',
+                            hintText: localization.transactionNotes,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -765,7 +770,7 @@ class _HomePageState extends State<HomePage> {
                           keyboardType: TextInputType.multiline,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter notes';
+                              return localization.pleaseEnterNotes;
                             }
                             return null;
                           },
@@ -793,7 +798,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         child: Text(
-                          'Cancel',
+                          localization.cancel,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -868,7 +873,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         child: Text(
-                          'Submit',
+                          localization.submit,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -911,13 +916,14 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
+        final localization = S.of(context);
         return AlertDialog(
           title: Text(
-            'Confirm Deletion',
+            localization.confirmDeletion,
             style: TextStyle(fontSize: 24, color: Colors.blue.shade800),
           ),
           content: Text(
-            'Are you sure you want to delete this transaction?',
+            localization.areYouSure,
             style: TextStyle(fontSize: 18),
           ),
           actions: [
@@ -926,7 +932,7 @@ class _HomePageState extends State<HomePage> {
                 Navigator.of(context).pop();
               },
               child: Text(
-                'No',
+                localization.no,
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
             ),
@@ -935,7 +941,7 @@ class _HomePageState extends State<HomePage> {
                 await deleteTransaction(id);
                 Navigator.of(context).pop();
               },
-              child: Text('Yes',
+              child: Text(localization.yes,
                   style: TextStyle(fontSize: 16, color: Colors.blue.shade800)),
             ),
           ],

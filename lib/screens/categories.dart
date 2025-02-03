@@ -1,6 +1,7 @@
 import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import '../models/category.dart';
+import 'package:expense_tracker/generated/l10n.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
@@ -22,6 +23,7 @@ class CategoriesPageState extends State<CategoriesPage> {
     String? newCategoryName = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
+        final localization = S.of(context);
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -33,7 +35,7 @@ class CategoriesPageState extends State<CategoriesPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Add Category",
+                Text(localization.addCategory,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -42,7 +44,7 @@ class CategoriesPageState extends State<CategoriesPage> {
                 TextFormField(
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: "Enter category name",
+                    hintText: localization.enterCatName,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -89,6 +91,7 @@ class CategoriesPageState extends State<CategoriesPage> {
     String? editedCategoryName = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
+        final localization = S.of(context);
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -101,7 +104,7 @@ class CategoriesPageState extends State<CategoriesPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Edit Category",
+                  localization.editCategory,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -112,7 +115,7 @@ class CategoriesPageState extends State<CategoriesPage> {
                   autofocus: true,
                   controller: TextEditingController(text: categoryToEdit.name),
                   decoration: InputDecoration(
-                    hintText: "Edit category name",
+                    hintText: localization.editCatName,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -158,9 +161,10 @@ class CategoriesPageState extends State<CategoriesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Manage Categories"),
+        title: Text(localization.manageCategories),
       ),
       body: ListView.builder(
         itemCount: categories.length,
@@ -192,7 +196,7 @@ class CategoriesPageState extends State<CategoriesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: addCategory,
-        tooltip: "Add Category",
+        tooltip: localization.addCategory,
         backgroundColor: Colors.blue.shade800,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
