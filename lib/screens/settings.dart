@@ -3,6 +3,7 @@ import 'package:expense_tracker/models/transactions.dart';
 import 'package:expense_tracker/providers/currency_provider.dart';
 import 'package:expense_tracker/screens/categories.dart';
 import 'package:expense_tracker/screens/currency.dart';
+import 'package:expense_tracker/screens/language.dart';
 import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -70,6 +71,20 @@ class SettingsPageState extends State<SettingsPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => CategoriesPage()),
+                      );
+                    },
+                  ),
+                  Divider(
+                    color: Colors.blue.shade800,
+                  ),
+                  buildListTile(
+                    "Language",
+                    Icons.language,
+                        () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => LanguagePage()),
                       );
                     },
                   ),

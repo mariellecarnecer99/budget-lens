@@ -15,7 +15,7 @@ class CurrencyPageState extends State<CurrencyPage> {
     {"name": "EUR", "icon": Icons.euro_symbol},
     {"name": "GBP", "icon": Icons.currency_pound},
     {"name": "INR", "icon": Icons.currency_rupee},
-    {"name": "JPY", "icon": Icons.currency_yuan},
+    {"name": "CNY", "icon": Icons.currency_yen},
     {"name": "PHP", "icon": '₱'},
   ];
 
