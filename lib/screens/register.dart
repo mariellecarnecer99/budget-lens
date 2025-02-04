@@ -30,6 +30,11 @@ class RegisterPageState extends State<RegisterPage> {
 
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text("Registration Successful")));
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
       });
     }
   }
