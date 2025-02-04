@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "418363139905",
+    "project_id": "budgetlens-bbf14",
+    "storage_bucket": "budgetlens-bbf14.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418363139905:android:571e3f7d069c4c694923c0",
+        "android_client_info": {
+          "package_name": "com.example.expense_tracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_85SQrn0n34nJhlQzH_ezYERzxf7JYc4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,6 +4,7 @@ import 'package:expense_tracker/providers/currency_provider.dart';
 import 'package:expense_tracker/screens/categories.dart';
 import 'package:expense_tracker/screens/currency.dart';
 import 'package:expense_tracker/screens/language.dart';
+import 'package:expense_tracker/screens/login.dart';
 import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,6 +12,7 @@ import 'package:intl/intl.dart';
 import 'navbar.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker/generated/l10n.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -82,12 +84,36 @@ class SettingsPageState extends State<SettingsPage> {
                   buildListTile(
                     localization.language,
                     Icons.language,
-                        () {
+                    () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => LanguagePage()),
+                        MaterialPageRoute(builder: (context) => LanguagePage()),
                       );
+                    },
+                  ),
+                  Divider(
+                    color: Colors.blue.shade800,
+                  ),
+                  buildListTile(
+                    'Logout',
+                    Icons.logout,
+                    () async {
+                      try {
+                        await FirebaseAuth.instance.signOut();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Logged out successfully")),
+                        );
+
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => LoginPage()),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Error logging out")),
+                        );
+                      }
                     },
                   ),
                   Divider(
@@ -147,7 +173,8 @@ class SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
+        final selectedCurrencyIcon =
+            context.watch<CurrencyProvider>().selectedCurrencyIcon;
         final localization = S.of(context);
         return Dialog(
           shape: RoundedRectangleBorder(
@@ -223,7 +250,9 @@ class SettingsPageState extends State<SettingsPage> {
                           controller: transactionAmountController,
                           decoration: InputDecoration(
                             hintText: localization.transactionAmount,
-                            prefixText: selectedCurrencyIcon is String ? selectedCurrencyIcon : null,
+                            prefixText: selectedCurrencyIcon is String
+                                ? selectedCurrencyIcon
+                                : null,
                             prefixIcon: selectedCurrencyIcon is IconData
                                 ? Icon(selectedCurrencyIcon)
                                 : null,
