@@ -2,7 +2,7 @@ import 'package:expense_tracker/generated/l10n.dart';
 import 'package:expense_tracker/providers/currency_provider.dart';
 import 'package:expense_tracker/providers/language_provider.dart';
 import 'package:expense_tracker/providers/theme_provider.dart';
-import 'package:expense_tracker/screens/home.dart';
+import 'package:expense_tracker/screens/splash.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
           ],
           theme: themeProvider.currentTheme,
           debugShowCheckedModeBanner: false,
-          home: HomePage(),
+          home: SplashPage(),
         );
       },
     );
