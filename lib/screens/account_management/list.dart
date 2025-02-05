@@ -1,3 +1,5 @@
+import 'package:expense_tracker/screens/account_management/password_management.dart';
+import 'package:expense_tracker/screens/account_management/profile.dart';
 import 'package:expense_tracker/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -19,19 +21,33 @@ class _AccountManagementListState extends State<AccountManagementList> {
       body: ListView(
         children: [
           ListTile(
-            leading: Icon(Icons.person),
+            leading: Icon(Icons.person, color: Colors.blue.shade800),
             title: Text("Profile Details"),
             onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => ProfilePage()),
+              );
             },
           ),
+          Divider(
+            color: Colors.blue.shade800,
+          ),
           ListTile(
-            leading: Icon(Icons.lock),
+            leading: Icon(Icons.lock, color: Colors.blue.shade800),
             title: Text("Password Management"),
             onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => PasswordManagementPage()),
+              );
             },
           ),
+          Divider(
+            color: Colors.blue.shade800,
+          ),
           ListTile(
-            leading: Icon(Icons.logout),
+            leading: Icon(Icons.logout, color: Colors.blue.shade800),
             title: Text("Sign Out"),
             onTap: () async {
               try {
@@ -51,6 +67,9 @@ class _AccountManagementListState extends State<AccountManagementList> {
                 );
               }
             },
+          ),
+          Divider(
+            color: Colors.blue.shade800,
           ),
         ],
       ),
