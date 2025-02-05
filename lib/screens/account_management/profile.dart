@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -17,6 +19,11 @@ class _ProfilePageState extends State<ProfilePage> {
   XFile? _profileImage;
   final _picker = ImagePicker();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
 
   Future<void> _requestPermissions() async {
     await Permission.camera.request();
@@ -24,22 +31,102 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _pickImage() async {
+    await _requestPermissions();
+
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _profileImage = image;
-    });
+
+    if (image != null) {
+      setState(() {
+        _profileImage = image;
+      });
+
+      final file = File(image.path);
+      try {
+        firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+            .ref()
+            .child('profile_pictures')
+            .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
+
+        await ref.putFile(file);
+
+        String downloadUrl = await ref.getDownloadURL();
+
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .update({'profileImage': downloadUrl});
+      } catch (e) {
+        print("Error uploading image: $e");
+      }
+    }
   }
 
   Future<void> _updateProfile() async {
     if (_formKey.currentState?.validate() ?? false) {
       User? user = FirebaseAuth.instance.currentUser;
+
       if (_name != null) {
         await user?.updateDisplayName(_name);
       }
 
+      DocumentReference userRef = FirebaseFirestore.instance
+          .collection('users')
+          .doc(user?.uid);
+
+      await userRef.set({
+        'fullName': _name,
+        'phoneNumber': _phoneNumber,
+        'bio': _bio,
+        'profileImage': _profileImage != null
+            ? await _uploadProfileImage(_profileImage!)
+            : null,
+      }, SetOptions(merge: true));
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Profile updated successfully!')),
       );
+    }
+  }
+
+  Future<String?> _uploadProfileImage(XFile image) async {
+    try {
+      File file = File(image.path);
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('profile_pictures')
+          .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
+
+      await ref.putFile(file);
+
+      String downloadUrl = await ref.getDownloadURL();
+      return downloadUrl;
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
+    }
+  }
+
+  Future<void> _loadProfileData() async {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (userDoc.exists) {
+        var data = userDoc.data() as Map<String, dynamic>;
+
+        setState(() {
+          _name = data['fullName'];
+          _phoneNumber = data['phoneNumber'];
+          _bio = data['bio'];
+          _profileImage = data['profileImage'] != null
+              ? XFile(data['profileImage'])
+              : null;
+        });
+      }
     }
   }
 
@@ -57,14 +144,18 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               GestureDetector(
                 onTap: _pickImage,
-                child: CircleAvatar(
-                  radius: 60,
-                  backgroundImage: _profileImage != null
-                      ? FileImage(File(_profileImage!.path))
-                      : AssetImage('assets/default_profile.png') as ImageProvider,
-                  child: _profileImage == null
-                      ? Icon(Icons.camera_alt, size: 50, color: Colors.white)
-                      : null,
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: _profileImage != null
+                          ? NetworkImage(_profileImage!.path)
+                          : AssetImage('assets/default_profile.png') as ImageProvider,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
                 ),
               ),
               SizedBox(height: 16),
