@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> {
                           transaction.transactionName,
                           transaction.date,
                           transaction.categoryName,
-                          transaction.amount.toStringAsFixed(2));
+                      );
                     }),
                   ],
                 );
@@ -336,7 +336,6 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.blue.shade800,
                           ),
                         ),
-                        // SizedBox(width: 2),
                         Text(
                           snapshot.data!.toStringAsFixed(2),
                           style: TextStyle(
@@ -367,8 +366,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Container buildTransactionRow(int? id, String transactionName, String date,
-      String categoryName, String amount) {
-    final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
+      String categoryName) {
     final localization = S.of(context);
     return Container(
         margin: EdgeInsets.only(bottom: 8),
@@ -427,31 +425,6 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ],
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                selectedCurrencyIcon is IconData
-                    ? Icon(
-                  selectedCurrencyIcon,
-                  size: 18, color: Colors.black
-                )
-                    : Text(
-                  selectedCurrencyIcon,
-                  style: TextStyle(
-                    fontSize: 18,
-                      color: Colors.black
-                  ),
-                ),
-                // SizedBox(width: 2),
-                Text(
-                  amount,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black
-                  ),
                 ),
               ],
             ),
