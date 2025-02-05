@@ -1,10 +1,10 @@
 import 'package:expense_tracker/models/category.dart';
 import 'package:expense_tracker/models/transactions.dart';
 import 'package:expense_tracker/providers/currency_provider.dart';
+import 'package:expense_tracker/screens/account_management/list.dart';
 import 'package:expense_tracker/screens/categories.dart';
 import 'package:expense_tracker/screens/currency.dart';
 import 'package:expense_tracker/screens/language.dart';
-import 'package:expense_tracker/screens/login.dart';
 import 'package:expense_tracker/services/database_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +12,6 @@ import 'package:intl/intl.dart';
 import 'navbar.dart';
 import 'package:provider/provider.dart';
 import 'package:expense_tracker/generated/l10n.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -95,25 +94,13 @@ class SettingsPageState extends State<SettingsPage> {
                     color: Colors.blue.shade800,
                   ),
                   buildListTile(
-                    'Logout',
-                    Icons.logout,
-                    () async {
-                      try {
-                        await FirebaseAuth.instance.signOut();
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Logged out successfully")),
-                        );
-
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
-                        );
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Error logging out")),
-                        );
-                      }
+                    'Account Management',
+                    Icons.account_box,
+                        () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AccountManagementList()),
+                      );
                     },
                   ),
                   Divider(
