@@ -25,7 +25,7 @@ class _CustomToggleSwitchState extends State<CustomToggleSwitch> {
         height: 30,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
-          color: isDarkMode ? Colors.blueAccent : Colors.grey.withOpacity(0.3),
+          color: isDarkMode ? Colors.grey.withOpacity(0.3) : Colors.blueAccent,
         ),
         child: Stack(
           children: [
@@ -34,17 +34,18 @@ class _CustomToggleSwitchState extends State<CustomToggleSwitch> {
                 duration: Duration(milliseconds: 300),
                 child: isDarkMode
                     ? Icon(
-                  Icons.nightlight_round,
-                  key: ValueKey<int>(1),
-                  color: Colors.white,
-                  size: 20,
-                )
-                    : Icon(
                   Icons.wb_sunny,
                   key: ValueKey<int>(0),
                   color: Colors.yellow,
                   size: 20,
-                ),
+                )
+                    :
+                  Icon(
+                    Icons.nightlight_round,
+                    key: ValueKey<int>(1),
+                    color: Colors.white,
+                    size: 20,
+                  ),
               ),
             ),
           ],
