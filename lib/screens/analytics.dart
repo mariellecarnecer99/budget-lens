@@ -287,7 +287,10 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                               0.0, (sum, t) => sum + t['amount']);
 
                           return ExpansionTile(
-                            title: Text("${localization.transactionsFor} $period"),
+                            title: Text("${localization.transactionsFor}"
+                                "${groupBy == 'week' ? " ${localization.week}" : ''} "
+                                "$period"
+                            ),
                             subtitle: Row(
                               children: [
                                 Text(
@@ -393,6 +396,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
       context: context,
       builder: (BuildContext context) {
         final selectedCurrencyIcon = context.watch<CurrencyProvider>().selectedCurrencyIcon;
+        final localization = S.of(context);
         return Dialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
@@ -414,7 +418,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Add Transaction',
+                        localization.addTransaction,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 20,
@@ -440,7 +444,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         TextFormField(
                           controller: transactionNameController,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Name',
+                            hintText: localization.transactionName,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -457,7 +461,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                           ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter details';
+                              return localization.pleaseEnterDetails;
                             }
                             return null;
                           },
@@ -466,7 +470,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         TextFormField(
                           controller: transactionAmountController,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Amount',
+                            hintText: localization.transactionAmount,
                             prefixText: selectedCurrencyIcon is String ? selectedCurrencyIcon : null,
                             prefixIcon: selectedCurrencyIcon is IconData
                                 ? Icon(selectedCurrencyIcon)
@@ -493,12 +497,12 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                           ],
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter amount';
+                              return localization.pleaseEnterAmount;
                             }
                             if (double.tryParse(
                                     value.replaceAll(RegExp(r'[^\d.]'), '')) ==
                                 null) {
-                              return 'Please enter a valid number';
+                              return localization.pleaseEnterAValidNumber;
                             }
                             return null;
                           },
@@ -507,7 +511,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         TextFormField(
                           controller: transactionDateController,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Date (YYYY-MM-DD)',
+                            hintText: localization.transactionDate,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -545,16 +549,16 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                           keyboardType: TextInputType.datetime,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter a transaction date';
+                              return localization.pleaseEnterTransactionDate;
                             }
                             RegExp dateRegExp = RegExp(r'^\d{4}-\d{2}-\d{2}$');
                             if (!dateRegExp.hasMatch(value)) {
-                              return 'Please enter a valid date (YYYY-MM-DD)';
+                              return localization.pleaseEnterValidDate;
                             }
                             try {
                               DateTime.parse(value);
                             } catch (e) {
-                              return 'Please enter a valid date (YYYY-MM-DD)';
+                              return localization.pleaseEnterValidDate;
                             }
                             return null;
                           },
@@ -563,7 +567,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         DropdownButtonFormField<String>(
                           value: transactionCategory,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Category',
+                            hintText: localization.transactionCategory,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -589,7 +593,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select a category';
+                              return localization.pleaseSelectCategory;
                             }
                             return null;
                           },
@@ -598,7 +602,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         DropdownButtonFormField<String>(
                           value: transactionType,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Type',
+                            hintText: localization.transactionType,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -626,7 +630,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                           },
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please select a transaction type';
+                              return localization.pleaseEnterTransactionType;
                             }
                             return null;
                           },
@@ -635,7 +639,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                         TextFormField(
                           controller: transactionNotesController,
                           decoration: InputDecoration(
-                            hintText: 'Transaction Notes',
+                            hintText: localization.transactionNotes,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
@@ -654,7 +658,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                           keyboardType: TextInputType.multiline,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter notes';
+                              return localization.pleaseEnterNotes;
                             }
                             return null;
                           },
@@ -682,7 +686,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                           ),
                         ),
                         child: Text(
-                          'Cancel',
+                          localization.cancel,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -742,7 +746,7 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                           ),
                         ),
                         child: Text(
-                          'Submit',
+                          localization.submit,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,

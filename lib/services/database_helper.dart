@@ -192,7 +192,7 @@ class DatabaseHelper {
         final firstDayOfYear = DateTime(dateTime.year, 1, 1);
         final daysSinceStartOfYear = dateTime.difference(firstDayOfYear).inDays;
         final weekOfYear = ((daysSinceStartOfYear + 1) / 7).ceil();
-        period = 'Week $weekOfYear, ${dateTime.year}';
+        period = '$weekOfYear, ${dateTime.year}';
       } else if (groupBy == 'month') {
         final dateTime = DateTime.parse(date);
         period =

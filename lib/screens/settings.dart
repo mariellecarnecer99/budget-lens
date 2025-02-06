@@ -54,12 +54,12 @@ class SettingsPageState extends State<SettingsPage> {
                 padding: EdgeInsets.zero,
                 children: <Widget>[
                   buildListTile(
-                    localization.currency,
-                    Icons.currency_exchange,
-                    () {
+                    localization.accountManagement,
+                    Icons.account_box,
+                        () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CurrencyPage()),
+                        MaterialPageRoute(builder: (context) => AccountManagementList()),
                       );
                     },
                   ),
@@ -69,7 +69,7 @@ class SettingsPageState extends State<SettingsPage> {
                   buildListTile(
                     localization.categories,
                     Icons.category,
-                    () {
+                        () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -81,12 +81,12 @@ class SettingsPageState extends State<SettingsPage> {
                     color: Colors.blue.shade800,
                   ),
                   buildListTile(
-                    localization.language,
-                    Icons.language,
-                    () {
+                    localization.currency,
+                    Icons.currency_exchange,
+                        () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LanguagePage()),
+                        MaterialPageRoute(builder: (context) => CurrencyPage()),
                       );
                     },
                   ),
@@ -94,12 +94,12 @@ class SettingsPageState extends State<SettingsPage> {
                     color: Colors.blue.shade800,
                   ),
                   buildListTile(
-                    localization.accountManagement,
-                    Icons.account_box,
+                    localization.language,
+                    Icons.language,
                         () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => AccountManagementList()),
+                        MaterialPageRoute(builder: (context) => LanguagePage()),
                       );
                     },
                   ),
@@ -385,7 +385,7 @@ class SettingsPageState extends State<SettingsPage> {
                                   BorderSide(color: Colors.grey.shade300),
                             ),
                           ),
-                          items: [localization.expense, localization.income]
+                          items: ['Expense', 'Income']
                               .map((type) => DropdownMenuItem<String>(
                                     value: type,
                                     child: Text(type),
