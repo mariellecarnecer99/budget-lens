@@ -734,6 +734,8 @@ class AnalyticsPageState extends State<AnalyticsPage> {
                             DatabaseHelper dbHelper = DatabaseHelper();
                             await dbHelper.insertTransaction(newTransaction);
 
+                            _loadData();
+
                             Navigator.of(context).pop();
                           }
                         },
