@@ -19,12 +19,8 @@ class _ProfilePageState extends State<ProfilePage> {
   String? _name, _phoneNumber, _bio;
   XFile? _profileImage;
   final _picker = ImagePicker();
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfileData();
-  }
+  bool _isLoading = true;
+  bool _isUpdating = false;
 
   Future<void> _requestPermissions() async {
     await Permission.camera.request();
@@ -63,6 +59,10 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _updateProfile() async {
+    setState(() {
+      _isUpdating = true;
+    });
+
     final localization = S.of(context);
     if (_formKey.currentState?.validate() ?? false) {
       User? user = FirebaseAuth.instance.currentUser;
@@ -87,16 +87,25 @@ class _ProfilePageState extends State<ProfilePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(localization.profileUpdateSuccess)),
       );
+
+      setState(() {
+        _isUpdating = false;
+      });
+    } else {
+      setState(() {
+        _isUpdating = false;
+      });
     }
   }
 
   Future<String?> _uploadProfileImage(XFile image) async {
     try {
+      final fileExtension = image.path.split('.').last;
       File file = File(image.path);
       firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
           .ref()
           .child('profile_pictures')
-          .child('${FirebaseAuth.instance.currentUser!.uid}.jpg');
+          .child('${FirebaseAuth.instance.currentUser!.uid}.$fileExtension');
 
       await ref.putFile(file);
 
@@ -120,21 +129,37 @@ class _ProfilePageState extends State<ProfilePage> {
       if (userDoc.exists) {
         var data = userDoc.data() as Map<String, dynamic>;
 
-        setState(() {
-          _name = data['fullName'];
-          _phoneNumber = data['phoneNumber'];
-          _bio = data['bio'];
-          _profileImage = data['profileImage'] != null
-              ? XFile(data['profileImage'])
-              : null;
-        });
+        if (mounted) {
+          setState(() {
+            _name = data['fullName'] ?? '';
+            _phoneNumber = data['phoneNumber'] ?? '';
+            _bio = data['bio'] ?? '';
+            _profileImage = data['profileImage'] != null
+                ? XFile(data['profileImage'])
+                : null;
+            _isLoading = false;
+          });
+        }
+      } else {
+        print('User document does not exist');
       }
     }
   }
 
   @override
+  void initState() {
+    super.initState();
+    _loadProfileData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final localization = S.of(context);
+
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text(localization.profile),
@@ -154,7 +179,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       image: _profileImage != null
+                          ? _profileImage!.path.startsWith('http')
                           ? NetworkImage(_profileImage!.path)
+                          : FileImage(File(_profileImage!.path))
                           : AssetImage('assets/default_profile.png') as ImageProvider,
                       fit: BoxFit.contain,
                     ),
@@ -163,7 +190,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               SizedBox(height: 16),
               TextFormField(
-                initialValue: _name,
+                initialValue: _name ?? '',
                 decoration: InputDecoration(
                   hintText: localization.fullName,
                   border: OutlineInputBorder(
@@ -180,7 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               SizedBox(height: 16),
               TextFormField(
-                initialValue: _phoneNumber,
+                initialValue: _phoneNumber ?? '',
                 decoration: InputDecoration(
                   hintText: localization.phoneNumber,
                   border: OutlineInputBorder(
@@ -192,7 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               SizedBox(height: 16),
               TextFormField(
-                initialValue: _bio,
+                initialValue: _bio ?? '',
                 decoration: InputDecoration(
                   hintText: localization.bio,
                   border: OutlineInputBorder(
@@ -205,14 +232,16 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _updateProfile,
+                onPressed: _isUpdating ? null : _updateProfile,
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(100, 50),
                   backgroundColor: Colors.blue.shade800,
                 ),
-                child: Text(
-                  localization.updateProfile,
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                child: _isUpdating
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text(
+                    localization.updateProfile,
+                    style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),
             ],

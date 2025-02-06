@@ -14,6 +14,7 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   String _errorMessage = '';
 
@@ -24,6 +25,10 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
     }
 
     try {
+      setState(() {
+        _isLoading = true;
+      });
+
       User? user = FirebaseAuth.instance.currentUser;
 
       AuthCredential credential = EmailAuthProvider.credential(
@@ -46,6 +51,10 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
     } catch (e) {
       setState(() {
         _errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
       });
     }
   }
@@ -120,12 +129,14 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
               ),
               SizedBox(height: 16),
               ElevatedButton(
-                onPressed: _changePassword,
+                onPressed: _isLoading ? null : _changePassword,
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(100, 50),
                   backgroundColor: Colors.blue.shade800,
                 ),
-                child: Text(
+                child:  _isLoading
+                    ? CircularProgressIndicator(color: Colors.white)
+                    : Text(
                     localization.changePassword,
                     style: TextStyle(fontSize: 18, color: Colors.white)
                 ),
