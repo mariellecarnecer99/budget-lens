@@ -3,6 +3,7 @@ import 'package:expense_tracker/screens/account_management/profile.dart';
 import 'package:expense_tracker/screens/login.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:expense_tracker/generated/l10n.dart';
 
 class AccountManagementList extends StatefulWidget {
   const AccountManagementList({super.key});
@@ -14,15 +15,16 @@ class AccountManagementList extends StatefulWidget {
 class _AccountManagementListState extends State<AccountManagementList> {
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text("Account Management"),
+        title: Text(localization.accountManagement),
       ),
       body: ListView(
         children: [
           ListTile(
             leading: Icon(Icons.person, color: Colors.blue.shade800),
-            title: Text("Profile Details"),
+            title: Text(localization.profileDetails),
             onTap: () {
               Navigator.pushReplacement(
                 context,
@@ -35,7 +37,7 @@ class _AccountManagementListState extends State<AccountManagementList> {
           ),
           ListTile(
             leading: Icon(Icons.lock, color: Colors.blue.shade800),
-            title: Text("Password Management"),
+            title: Text(localization.passwordManagement),
             onTap: () {
               Navigator.pushReplacement(
                 context,
@@ -48,7 +50,7 @@ class _AccountManagementListState extends State<AccountManagementList> {
           ),
           ListTile(
             leading: Icon(Icons.logout, color: Colors.blue.shade800),
-            title: Text("Sign Out"),
+            title: Text(localization.signOut),
             onTap: () async {
               try {
                 await FirebaseAuth.instance.signOut();

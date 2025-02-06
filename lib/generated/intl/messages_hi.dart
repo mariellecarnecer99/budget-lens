@@ -22,22 +22,29 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "accountManagement": MessageLookupByLibrary.simpleMessage("खाता प्रबंधन"),
     "addCategory": MessageLookupByLibrary.simpleMessage("श्रेणी जोड़ें"),
     "addTransaction": MessageLookupByLibrary.simpleMessage("लेन-देन जोड़ें"),
     "areYouSure": MessageLookupByLibrary.simpleMessage(
       "क्या आप वाकई इस लेन-देन को हटाना चाहते हैं?",
     ),
     "balance": MessageLookupByLibrary.simpleMessage("बैलेंस"),
+    "bio": MessageLookupByLibrary.simpleMessage("जीवनी"),
     "breakdown": MessageLookupByLibrary.simpleMessage("मुख्य खर्चे"),
     "breakdownSmallText": MessageLookupByLibrary.simpleMessage("विवरण"),
     "cancel": MessageLookupByLibrary.simpleMessage("रद्द करें"),
     "cashFlow": MessageLookupByLibrary.simpleMessage("नकदी प्रवाह"),
     "categories": MessageLookupByLibrary.simpleMessage("श्रेणियाँ"),
     "category": MessageLookupByLibrary.simpleMessage("श्रेणी"),
+    "changePassword": MessageLookupByLibrary.simpleMessage("पासवर्ड बदलें"),
     "confirmDeletion": MessageLookupByLibrary.simpleMessage(
       "हटाने की पुष्टि करें",
     ),
+    "confirmNewPassword": MessageLookupByLibrary.simpleMessage(
+      "नए पासवर्ड की पुष्टि करें",
+    ),
     "currency": MessageLookupByLibrary.simpleMessage("मुद्रा"),
+    "currentPassword": MessageLookupByLibrary.simpleMessage("वर्तमान पासवर्ड"),
     "date": MessageLookupByLibrary.simpleMessage("तारीख"),
     "delete": MessageLookupByLibrary.simpleMessage("हटाना"),
     "edit": MessageLookupByLibrary.simpleMessage("संपादित करें"),
@@ -55,8 +62,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "financialJourney": MessageLookupByLibrary.simpleMessage(
       "आपकी वित्तीय यात्रा",
     ),
+    "fullName": MessageLookupByLibrary.simpleMessage("पूरा नाम"),
     "income": MessageLookupByLibrary.simpleMessage("आय"),
     "language": MessageLookupByLibrary.simpleMessage("भाषा"),
+    "loggedOutError": MessageLookupByLibrary.simpleMessage("लॉगआउट में त्रुटि"),
+    "loggedOutSuccess": MessageLookupByLibrary.simpleMessage(
+      "सफलतापूर्वक लॉगआउट हुआ",
+    ),
     "manageCategories": MessageLookupByLibrary.simpleMessage(
       "श्रेणियाँ प्रबंधित करें",
     ),
@@ -64,10 +76,27 @@ class MessageLookup extends MessageLookupByLibrary {
       "सेटिंग्स प्रबंधित करें",
     ),
     "month": MessageLookupByLibrary.simpleMessage("महीना"),
+    "newPassword": MessageLookupByLibrary.simpleMessage("नया पासवर्ड"),
     "no": MessageLookupByLibrary.simpleMessage("नहीं"),
     "noData": MessageLookupByLibrary.simpleMessage("कोई डेटा उपलब्ध नहीं है।"),
     "noTransactions": MessageLookupByLibrary.simpleMessage(
       "कोई लेन-देन उपलब्ध नहीं है।",
+    ),
+    "passwordManagement": MessageLookupByLibrary.simpleMessage(
+      "पासवर्ड प्रबंधन",
+    ),
+    "passwordUpdateSuccess": MessageLookupByLibrary.simpleMessage(
+      "पासवर्ड सफलतापूर्वक अपडेट हुआ!",
+    ),
+    "passwordValidation": MessageLookupByLibrary.simpleMessage(
+      "पासवर्ड कम से कम 6 अक्षरों का होना चाहिए",
+    ),
+    "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
+      "पासवर्ड मेल नहीं खाते",
+    ),
+    "phoneNumber": MessageLookupByLibrary.simpleMessage("फोन नंबर"),
+    "pleaseConfirmNewPassword": MessageLookupByLibrary.simpleMessage(
+      "कृपया अपने नए पासवर्ड की पुष्टि करें",
     ),
     "pleaseEnterAValidNumber": MessageLookupByLibrary.simpleMessage(
       "कृपया एक मान्य संख्या दर्ज करें",
@@ -78,8 +107,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseEnterDetails": MessageLookupByLibrary.simpleMessage(
       "कृपया विवरण दर्ज करें",
     ),
+    "pleaseEnterFullName": MessageLookupByLibrary.simpleMessage(
+      "कृपया अपना पूरा नाम दर्ज करें",
+    ),
+    "pleaseEnterNewPassword": MessageLookupByLibrary.simpleMessage(
+      "कृपया अपना नया पासवर्ड दर्ज करें",
+    ),
     "pleaseEnterNotes": MessageLookupByLibrary.simpleMessage(
       "कृपया नोट्स दर्ज करें",
+    ),
+    "pleaseEnterPassword": MessageLookupByLibrary.simpleMessage(
+      "कृपया अपना वर्तमान पासवर्ड दर्ज करें",
     ),
     "pleaseEnterTransactionDate": MessageLookupByLibrary.simpleMessage(
       "कृपया लेन-देन की तिथि दर्ज करें",
@@ -93,8 +131,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseSelectCategory": MessageLookupByLibrary.simpleMessage(
       "कृपया एक श्रेणी चुनें",
     ),
+    "profile": MessageLookupByLibrary.simpleMessage("प्रोफ़ाइल"),
+    "profileDetails": MessageLookupByLibrary.simpleMessage("प्रोफ़ाइल विवरण"),
+    "profileUpdateSuccess": MessageLookupByLibrary.simpleMessage(
+      "प्रोफ़ाइल सफलतापूर्वक अपडेट हुई!",
+    ),
     "selectCurrency": MessageLookupByLibrary.simpleMessage("मुद्रा चुनें"),
     "selectLanguage": MessageLookupByLibrary.simpleMessage("भाषा चुनें"),
+    "signOut": MessageLookupByLibrary.simpleMessage("साइन आउट"),
     "submit": MessageLookupByLibrary.simpleMessage("जमा करें"),
     "tagLine": MessageLookupByLibrary.simpleMessage("आपका वित्तीय स्नैपशॉट"),
     "topSpendingCategories": MessageLookupByLibrary.simpleMessage(
@@ -119,6 +163,9 @@ class MessageLookup extends MessageLookupByLibrary {
       "लेन-देन का प्रकार",
     ),
     "transactionsFor": MessageLookupByLibrary.simpleMessage("लेन-देन के लिए"),
+    "updateProfile": MessageLookupByLibrary.simpleMessage(
+      "प्रोफ़ाइल अपडेट करें",
+    ),
     "viewAnalytics": MessageLookupByLibrary.simpleMessage("विश्लेषण देखें"),
     "week": MessageLookupByLibrary.simpleMessage("सप्ताह"),
     "year": MessageLookupByLibrary.simpleMessage("वर्ष"),

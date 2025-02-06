@@ -94,7 +94,7 @@ class SettingsPageState extends State<SettingsPage> {
                     color: Colors.blue.shade800,
                   ),
                   buildListTile(
-                    'Account Management',
+                    localization.accountManagement,
                     Icons.account_box,
                         () {
                       Navigator.push(

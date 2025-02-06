@@ -504,6 +504,216 @@ class S {
       args: [],
     );
   }
+
+  /// `Account Management`
+  String get accountManagement {
+    return Intl.message(
+      'Account Management',
+      name: 'accountManagement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile Details`
+  String get profileDetails {
+    return Intl.message(
+      'Profile Details',
+      name: 'profileDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password Management`
+  String get passwordManagement {
+    return Intl.message(
+      'Password Management',
+      name: 'passwordManagement',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign Out`
+  String get signOut {
+    return Intl.message('Sign Out', name: 'signOut', desc: '', args: []);
+  }
+
+  /// `Logged out successfully`
+  String get loggedOutSuccess {
+    return Intl.message(
+      'Logged out successfully',
+      name: 'loggedOutSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error logging out`
+  String get loggedOutError {
+    return Intl.message(
+      'Error logging out',
+      name: 'loggedOutError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile updated successfully!`
+  String get profileUpdateSuccess {
+    return Intl.message(
+      'Profile updated successfully!',
+      name: 'profileUpdateSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile`
+  String get profile {
+    return Intl.message('Profile', name: 'profile', desc: '', args: []);
+  }
+
+  /// `Full Name`
+  String get fullName {
+    return Intl.message('Full Name', name: 'fullName', desc: '', args: []);
+  }
+
+  /// `Please enter your full name`
+  String get pleaseEnterFullName {
+    return Intl.message(
+      'Please enter your full name',
+      name: 'pleaseEnterFullName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Phone Number`
+  String get phoneNumber {
+    return Intl.message(
+      'Phone Number',
+      name: 'phoneNumber',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Bio`
+  String get bio {
+    return Intl.message('Bio', name: 'bio', desc: '', args: []);
+  }
+
+  /// `Update Profile`
+  String get updateProfile {
+    return Intl.message(
+      'Update Profile',
+      name: 'updateProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password updated successfully!`
+  String get passwordUpdateSuccess {
+    return Intl.message(
+      'Password updated successfully!',
+      name: 'passwordUpdateSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current Password`
+  String get currentPassword {
+    return Intl.message(
+      'Current Password',
+      name: 'currentPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your current password`
+  String get pleaseEnterPassword {
+    return Intl.message(
+      'Please enter your current password',
+      name: 'pleaseEnterPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New Password`
+  String get newPassword {
+    return Intl.message(
+      'New Password',
+      name: 'newPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter your new password`
+  String get pleaseEnterNewPassword {
+    return Intl.message(
+      'Please enter your new password',
+      name: 'pleaseEnterNewPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password must be at least 6 characters long`
+  String get passwordValidation {
+    return Intl.message(
+      'Password must be at least 6 characters long',
+      name: 'passwordValidation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm New Password`
+  String get confirmNewPassword {
+    return Intl.message(
+      'Confirm New Password',
+      name: 'confirmNewPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please confirm your new password`
+  String get pleaseConfirmNewPassword {
+    return Intl.message(
+      'Please confirm your new password',
+      name: 'pleaseConfirmNewPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Passwords do not match`
+  String get passwordsDoNotMatch {
+    return Intl.message(
+      'Passwords do not match',
+      name: 'passwordsDoNotMatch',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Password`
+  String get changePassword {
+    return Intl.message(
+      'Change Password',
+      name: 'changePassword',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

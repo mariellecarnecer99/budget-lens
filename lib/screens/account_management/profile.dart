@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expense_tracker/generated/l10n.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -62,6 +63,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _updateProfile() async {
+    final localization = S.of(context);
     if (_formKey.currentState?.validate() ?? false) {
       User? user = FirebaseAuth.instance.currentUser;
 
@@ -83,7 +85,7 @@ class _ProfilePageState extends State<ProfilePage> {
       }, SetOptions(merge: true));
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Profile updated successfully!')),
+        SnackBar(content: Text(localization.profileUpdateSuccess)),
       );
     }
   }
@@ -132,9 +134,10 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: Text(localization.profile),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -162,7 +165,7 @@ class _ProfilePageState extends State<ProfilePage> {
               TextFormField(
                 initialValue: _name,
                 decoration: InputDecoration(
-                  labelText: 'Full Name',
+                  hintText: localization.fullName,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -170,7 +173,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 onChanged: (value) => _name = value,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your full name';
+                    return localization.pleaseEnterFullName;
                   }
                   return null;
                 },
@@ -179,7 +182,7 @@ class _ProfilePageState extends State<ProfilePage> {
               TextFormField(
                 initialValue: _phoneNumber,
                 decoration: InputDecoration(
-                  labelText: 'Phone Number',
+                  hintText: localization.phoneNumber,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -191,7 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
               TextFormField(
                 initialValue: _bio,
                 decoration: InputDecoration(
-                  labelText: 'Bio',
+                  hintText: localization.bio,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -208,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   backgroundColor: Colors.blue.shade800,
                 ),
                 child: Text(
-                  'Update Profile',
+                  localization.updateProfile,
                   style: TextStyle(fontSize: 18, color: Colors.white),
                 ),
               ),

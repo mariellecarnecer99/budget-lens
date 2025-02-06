@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:expense_tracker/generated/l10n.dart';
 
 class PasswordManagementPage extends StatefulWidget {
   const PasswordManagementPage({super.key});
@@ -17,6 +18,7 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
   String _errorMessage = '';
 
   Future<void> _changePassword() async {
+    final localization = S.of(context);
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -34,7 +36,7 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
       await user.updatePassword(_newPasswordController.text.trim());
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Password updated successfully!')),
+        SnackBar(content: Text(localization.passwordUpdateSuccess)),
       );
 
       _currentPasswordController.clear();
@@ -43,15 +45,16 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
 
     } catch (e) {
       setState(() {
-        _errorMessage = "Error updating password: ${e.toString()}";
+        _errorMessage = e.toString();
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final localization = S.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text('Password Management')),
+      appBar: AppBar(title: Text(localization.passwordManagement)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -63,14 +66,14 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
                 controller: _currentPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Current Password',
+                  hintText: localization.currentPassword,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your current password';
+                    return localization.pleaseEnterPassword;
                   }
                   return null;
                 },
@@ -80,17 +83,17 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
                 controller: _newPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'New Password',
+                  labelText: localization.newPassword,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your new password';
+                    return localization.pleaseEnterNewPassword;
                   }
                   if (value.length < 6) {
-                    return 'Password must be at least 6 characters long';
+                    return localization.passwordValidation;
                   }
                   return null;
                 },
@@ -100,17 +103,17 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
                 controller: _confirmPasswordController,
                 obscureText: true,
                 decoration: InputDecoration(
-                  labelText: 'Confirm New Password',
+                  labelText: localization.confirmNewPassword,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please confirm your new password';
+                    return localization.pleaseConfirmNewPassword;
                   }
                   if (value != _newPasswordController.text) {
-                    return 'Passwords do not match';
+                    return localization.passwordsDoNotMatch;
                   }
                   return null;
                 },
@@ -123,7 +126,7 @@ class _PasswordManagementPageState extends State<PasswordManagementPage> {
                   backgroundColor: Colors.blue.shade800,
                 ),
                 child: Text(
-                    'Change Password',
+                    localization.changePassword,
                     style: TextStyle(fontSize: 18, color: Colors.white)
                 ),
               ),

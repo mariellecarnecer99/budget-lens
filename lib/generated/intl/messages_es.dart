@@ -22,6 +22,9 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "accountManagement": MessageLookupByLibrary.simpleMessage(
+      "Gestión de cuentas",
+    ),
     "addCategory": MessageLookupByLibrary.simpleMessage("Agregar categoría"),
     "addTransaction": MessageLookupByLibrary.simpleMessage(
       "Agregar transacción",
@@ -30,16 +33,26 @@ class MessageLookup extends MessageLookupByLibrary {
       "¿Está seguro de que desea eliminar esta transacción?",
     ),
     "balance": MessageLookupByLibrary.simpleMessage("Balance"),
+    "bio": MessageLookupByLibrary.simpleMessage("Biografía"),
     "breakdown": MessageLookupByLibrary.simpleMessage("Gastos principales"),
     "breakdownSmallText": MessageLookupByLibrary.simpleMessage("Desglose"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancelar"),
     "cashFlow": MessageLookupByLibrary.simpleMessage("Flujo de efectivo"),
     "categories": MessageLookupByLibrary.simpleMessage("Categorías"),
     "category": MessageLookupByLibrary.simpleMessage("Categoría"),
+    "changePassword": MessageLookupByLibrary.simpleMessage(
+      "Cambiar contraseña",
+    ),
     "confirmDeletion": MessageLookupByLibrary.simpleMessage(
       "Confirmar eliminación",
     ),
+    "confirmNewPassword": MessageLookupByLibrary.simpleMessage(
+      "Confirmar nueva contraseña",
+    ),
     "currency": MessageLookupByLibrary.simpleMessage("Moneda"),
+    "currentPassword": MessageLookupByLibrary.simpleMessage(
+      "Contraseña actual",
+    ),
     "date": MessageLookupByLibrary.simpleMessage("Fecha"),
     "delete": MessageLookupByLibrary.simpleMessage("Eliminar"),
     "edit": MessageLookupByLibrary.simpleMessage("Editar"),
@@ -57,8 +70,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "financialJourney": MessageLookupByLibrary.simpleMessage(
       "Tu viaje financiero",
     ),
+    "fullName": MessageLookupByLibrary.simpleMessage("Nombre completo"),
     "income": MessageLookupByLibrary.simpleMessage("Ingresos"),
     "language": MessageLookupByLibrary.simpleMessage("Idioma"),
+    "loggedOutError": MessageLookupByLibrary.simpleMessage(
+      "Error al cerrar sesión",
+    ),
+    "loggedOutSuccess": MessageLookupByLibrary.simpleMessage(
+      "Cierre de sesión exitoso",
+    ),
     "manageCategories": MessageLookupByLibrary.simpleMessage(
       "Gestionar categorías",
     ),
@@ -66,10 +86,27 @@ class MessageLookup extends MessageLookupByLibrary {
       "Gestionar configuraciones",
     ),
     "month": MessageLookupByLibrary.simpleMessage("Mes"),
+    "newPassword": MessageLookupByLibrary.simpleMessage("Nueva contraseña"),
     "no": MessageLookupByLibrary.simpleMessage("No"),
     "noData": MessageLookupByLibrary.simpleMessage("No hay datos disponibles."),
     "noTransactions": MessageLookupByLibrary.simpleMessage(
       "No hay transacciones disponibles.",
+    ),
+    "passwordManagement": MessageLookupByLibrary.simpleMessage(
+      "Gestión de contraseñas",
+    ),
+    "passwordUpdateSuccess": MessageLookupByLibrary.simpleMessage(
+      "¡Contraseña actualizada con éxito!",
+    ),
+    "passwordValidation": MessageLookupByLibrary.simpleMessage(
+      "La contraseña debe tener al menos 6 caracteres",
+    ),
+    "passwordsDoNotMatch": MessageLookupByLibrary.simpleMessage(
+      "Las contraseñas no coinciden",
+    ),
+    "phoneNumber": MessageLookupByLibrary.simpleMessage("Número de teléfono"),
+    "pleaseConfirmNewPassword": MessageLookupByLibrary.simpleMessage(
+      "Por favor confirme su nueva contraseña",
     ),
     "pleaseEnterAValidNumber": MessageLookupByLibrary.simpleMessage(
       "Por favor, ingrese un número válido",
@@ -80,8 +117,17 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseEnterDetails": MessageLookupByLibrary.simpleMessage(
       "Por favor, ingrese los detalles",
     ),
+    "pleaseEnterFullName": MessageLookupByLibrary.simpleMessage(
+      "Por favor ingrese su nombre completo",
+    ),
+    "pleaseEnterNewPassword": MessageLookupByLibrary.simpleMessage(
+      "Por favor ingrese su nueva contraseña",
+    ),
     "pleaseEnterNotes": MessageLookupByLibrary.simpleMessage(
       "Por favor, ingrese las notas",
+    ),
+    "pleaseEnterPassword": MessageLookupByLibrary.simpleMessage(
+      "Por favor ingrese su contraseña actual",
     ),
     "pleaseEnterTransactionDate": MessageLookupByLibrary.simpleMessage(
       "Por favor, ingrese una fecha de transacción",
@@ -95,12 +141,20 @@ class MessageLookup extends MessageLookupByLibrary {
     "pleaseSelectCategory": MessageLookupByLibrary.simpleMessage(
       "Por favor, seleccione una categoría",
     ),
+    "profile": MessageLookupByLibrary.simpleMessage("Perfil"),
+    "profileDetails": MessageLookupByLibrary.simpleMessage(
+      "Detalles del perfil",
+    ),
+    "profileUpdateSuccess": MessageLookupByLibrary.simpleMessage(
+      "¡Perfil actualizado con éxito!",
+    ),
     "selectCurrency": MessageLookupByLibrary.simpleMessage(
       "Seleccionar moneda",
     ),
     "selectLanguage": MessageLookupByLibrary.simpleMessage(
       "Seleccionar idioma",
     ),
+    "signOut": MessageLookupByLibrary.simpleMessage("Cerrar sesión"),
     "submit": MessageLookupByLibrary.simpleMessage("Enviar"),
     "tagLine": MessageLookupByLibrary.simpleMessage("Tu resumen financiero"),
     "topSpendingCategories": MessageLookupByLibrary.simpleMessage(
@@ -131,6 +185,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "transactionsFor": MessageLookupByLibrary.simpleMessage(
       "Transacciones para",
     ),
+    "updateProfile": MessageLookupByLibrary.simpleMessage("Actualizar perfil"),
     "viewAnalytics": MessageLookupByLibrary.simpleMessage("Ver análisis"),
     "week": MessageLookupByLibrary.simpleMessage("Semana"),
     "year": MessageLookupByLibrary.simpleMessage("Año"),
