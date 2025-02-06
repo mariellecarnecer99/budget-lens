@@ -56,7 +56,7 @@ class _AccountManagementListState extends State<AccountManagementList> {
                 await FirebaseAuth.instance.signOut();
 
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Logged out successfully")),
+                  SnackBar(content: Text(localization.loggedOutSuccess)),
                 );
 
                 Navigator.pushReplacement(
@@ -65,7 +65,7 @@ class _AccountManagementListState extends State<AccountManagementList> {
                 );
               } catch (e) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text("Error logging out")),
+                  SnackBar(content: Text(localization.loggedOutError)),
                 );
               }
             },
