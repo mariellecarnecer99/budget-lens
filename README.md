@@ -81,17 +81,17 @@ To connect your app to Firebase, follow these steps:
 1. **Create a Firebase Project:**
 - Go to the [Firebase Console](https://console.firebase.google.com/)
 - Click on Add Project, and follow the prompts to create a new project.
-1. **Add Firebase to Your Android App:**
+2. **Add Firebase to Your Android App:**
 - In the Firebase console, select your project and click on Add App.
 - Choose Android and follow the instructions
-1. **Configure Firebase in your Flutter App:**
+3. **Configure Firebase in your Flutter App:**
 - Go to [Firebase documentation](https://firebase.google.com/docs/flutter/setup?platform=android) and follow the instructions
-1. **Enable Firebase Authentication:**
+4. **Enable Firebase Authentication:**
 - In the Firebase console, go to Authentication and enable the sign-in methods you plan to use (e.g., Email/Password, Google, etc.).
-1. **Enable Firebase Firestore:**
+5. **Enable Firebase Firestore:**
 - In the Firebase console, go to Firestore Database and click on Create Database.
 - Set the security rules (you can start with test mode for development).
-1. **Sync Firebase Services:**
+6. **Sync Firebase Services:**
 - After completing these steps, run:
   ```
   flutter clean
