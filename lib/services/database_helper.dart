@@ -174,7 +174,10 @@ class DatabaseHelper {
     final db = await database;
 
     final results = await db.rawQuery('''
-      SELECT date, amount, category_name, transaction_name FROM transactions ORDER BY date
+      SELECT date, amount, category_name, transaction_name 
+      FROM transactions t
+      WHERE t.category_name != 'Salary' AND t.category_name != 'Earnings'
+      ORDER BY date
     ''');
 
     List<Map<String, dynamic>> groupedTransactions = [];
